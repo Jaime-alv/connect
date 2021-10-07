@@ -2,3 +2,6 @@
 tests/
 .idea/
 venv/
+
+# python cache
+__pycache__/
