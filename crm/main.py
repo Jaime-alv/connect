@@ -34,9 +34,12 @@ def sign_up_form():
             missing_field.append(field)
     if missing_field:
         return flask.render_template('sign up error.html', inputs=missing_field, next=flask.url_for('sign_up'))
+    # check if email is already registered
+    new_user = flask.request.form.get('email')
+    if pathlib.Path(f'..\\user\\{new_user}').exists():
+        print('Email exists')
     # check if email is valid
     email_regex = re.compile(r"[a-zA-Z0-9_.]+@[a-zA-Z0-9_.+]+")
-    new_user = flask.request.form.get('email')
     email = email_regex.search(new_user)
     if email is None:
         print('no valid email')
