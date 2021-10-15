@@ -1,16 +1,42 @@
-# This is a sample Python script.
+import sys
 
-# Press Mayús+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import flask
+from flask import Flask
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+app = Flask(__name__)
 
 
-# Press the green button in the gutter to run the script.
+@app.route('/', methods=['GET'])
+def index():
+    return app.send_static_file('index.html')
+
+
+@app.route('/login')
+def login():
+    return app.send_static_file('login.html')
+
+
+@app.route('/sign_up')
+def sign_up():
+    return app.send_static_file('sign_up.html')
+
+
+@app.route('/sign_up_form', methods=['POST'])
+def sign_up_form():
+    fields = ['email', 'password', 'password_confirm']
+    # check if all fields are complete -> form validation
+    for field in fields:
+        value = flask.request.form.get(field, None)
+        if value is None or value == '':
+            return app.send_static_file('sign_up.html')
+    password = flask.request.form.get('password')
+    password_confirm = flask.request.form.get('password_confirm')
+    if password_confirm == password:
+        return app.send_static_file('index.html')
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    if sys.platform == 'darwin':  # different port if running on MacOsX
+        app.run(debug=True, port=8080)
+    else:
+        app.run(debug=True, port=80)

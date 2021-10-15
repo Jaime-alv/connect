@@ -5,3 +5,6 @@ venv/
 
 # python cache
 __pycache__/
+
+#other files
+index_old.html
