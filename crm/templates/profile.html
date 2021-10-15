@@ -8,8 +8,13 @@
 </head>
 <body>
 <div id="links">
-    <a href="/">Home</a>|<a href="login">Log out</a>|<a href="sign_up">My profile</a>
+    <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="my_profile">My profile</a>
 </div>
-Hello, this is my profile
+<h3>Hello, this is my profile</h3>
+<ul>
+    <li>My name is {{ user }}</li>
+    <li>My password is {{ password }}</li>
+    <li>My organization is {{ organization }}</li>
+</ul>
 </body>
 </html>
