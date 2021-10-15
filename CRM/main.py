@@ -1,5 +1,7 @@
 import sys
-
+import re
+import json
+import pathlib
 import flask
 from flask import Flask
 
@@ -23,16 +25,21 @@ def sign_up():
 
 @app.route('/sign_up_form', methods=['POST'])
 def sign_up_form():
+    missing_field = []
     fields = ['email', 'password', 'password_confirm']
     # check if all fields are complete -> form validation
     for field in fields:
         value = flask.request.form.get(field, None)
         if value is None or value == '':
-            return app.send_static_file('sign_up.html')
+            missing_field.append(field)
+    if missing_field:
+        return flask.render_template('sign up error.html', inputs=missing_field, next=flask.url_for('sign_up'))
+    # todo: check email is valid
+    # todo: check password is valid
     password = flask.request.form.get('password')
     password_confirm = flask.request.form.get('password_confirm')
     if password_confirm == password:
-        return app.send_static_file('index.html')
+        return flask.render_template('profile.html')
 
 
 if __name__ == '__main__':
