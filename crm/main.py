@@ -34,11 +34,19 @@ def sign_up_form():
             missing_field.append(field)
     if missing_field:
         return flask.render_template('sign up error.html', inputs=missing_field, next=flask.url_for('sign_up'))
-    # todo: check email is valid
-    # todo: check password is valid
+    # check if email is valid
+    email_regex = re.compile(r"[a-zA-Z0-9_.]+@[a-zA-Z0-9_.+]+")
+    new_user = flask.request.form.get('email')
+    email = email_regex.search(new_user)
+    if email is None:
+        print('no valid email')
+    # check if password is valid
     password = flask.request.form.get('password')
     password_confirm = flask.request.form.get('password_confirm')
-    if password_confirm == password:
+    if (any(character.islower() for character in password)
+            and any(character.isupper() for character in password)
+            and any(character.isdigit() for character in password)
+            and password == password_confirm):
         return flask.render_template('profile.html')
 
 
