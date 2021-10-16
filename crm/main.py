@@ -24,10 +24,13 @@ def sign_up():
 
 
 @app.route('/profile')
-def show_profile(user_email):
-    with pathlib.Path(f'..\\user\\{user_email}\\{user_email}.txt').open('wr') as file:
+def show_profile(organization, user_email):
+    with pathlib.Path(f'..\\user\\{organization}\\{user_email}.txt').open('r+') as file:
         user_profile = json.load(file)
-    return flask.render_template('profile.html', user=user_profile['email'], password=user_profile['password'])
+        user = user_profile['user']
+        password = user_profile['password']
+        organization = user_profile['organization']
+    return flask.render_template('profile.html', user=user, password=password, organization=organization)
 
 
 @app.route('/log_in', methods=['POST'])
@@ -79,13 +82,15 @@ def sign_up_form():
             and password == password_confirm):
         create_new_user(organization, new_user, password)
         flask.session['user'] = new_user
-        return show_profile(new_user)
+        return show_profile(organization, new_user)
     else:
         return error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
 
 
 # create user folder and json file with all data
 def create_new_user(organization, email, password):
+    if organization == '':
+        organization = email
     if not pathlib.Path(f'..\\user\\{organization}').exists():
         pathlib.Path(f'..\\user\\{organization}').mkdir(exist_ok=True)
     data = {'organization': organization,
@@ -94,7 +99,7 @@ def create_new_user(organization, email, password):
             'messages': {},
             'friends': [],
             }
-    with pathlib.Path(f'..\\user\\{organization}\\{email}.txt').open('w') as f:
+    with pathlib.Path(f'..\\user\\{email}\\profile.txt').open('w') as f:
         json.dump(data, f)
 
 
@@ -103,6 +108,7 @@ def error(message, next_url):
     return flask.render_template('error.html', error_message=message, next=flask.url_for(next_url))
 
 
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 if __name__ == '__main__':
     if sys.platform == 'darwin':  # different port if running on MacOsX
         app.run(debug=True, port=8080)
