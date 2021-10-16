@@ -23,10 +23,17 @@ def sign_up():
     return app.send_static_file('sign_up.html')
 
 
+@app.route('/profile')
+def show_profile(user_email):
+    with pathlib.Path(f'..\\user\\{user_email}\\{user_email}.txt').open('wr') as file:
+        user_profile = json.load(file)
+    return flask.render_template('profile.html', user=user_profile['email'], password=user_profile['password'])
+
+
 @app.route('/sign_up_form', methods=['POST'])
 def sign_up_form():
     missing_field = []
-    fields = ['organization', 'email', 'password', 'password_confirm']
+    fields = ['email', 'password', 'password_confirm']
 
     # check if all fields are complete -> form validation
     for field in fields:
@@ -56,7 +63,7 @@ def sign_up_form():
             and any(character.isdigit() for character in password)
             and password == password_confirm):
         create_new_user(organization, new_user, password)
-        return flask.render_template('profile.html')
+        return show_profile(new_user)
     else:
         return error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
 
