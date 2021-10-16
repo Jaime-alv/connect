@@ -30,6 +30,21 @@ def show_profile(user_email):
     return flask.render_template('profile.html', user=user_profile['email'], password=user_profile['password'])
 
 
+@app.route('/log_in', methods=['POST'])
+def log_in():
+    user = flask.request.form.get('email')
+    if not pathlib.Path(f'..\\user\\{user}\\{user}.txt').exists():
+        return error('No user with that email', 'sign_up')
+    else:
+        with pathlib.Path(f'..\\user\\{user}\\{user}.txt').open('r') as file:
+            file = json.load(file)
+        if file['password'] == flask.request.form.get('password'):
+            flask.session['user'] = user
+            return show_profile(user)
+        else:
+            return error('Incorrect password', 'login')
+
+
 @app.route('/sign_up_form', methods=['POST'])
 def sign_up_form():
     missing_field = []
@@ -63,6 +78,7 @@ def sign_up_form():
             and any(character.isdigit() for character in password)
             and password == password_confirm):
         create_new_user(organization, new_user, password)
+        flask.session['user'] = new_user
         return show_profile(new_user)
     else:
         return error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
