@@ -5,6 +5,7 @@ venv/
 
 #content in user/
 user/*
+data/*
 
 # python cache
 __pycache__/

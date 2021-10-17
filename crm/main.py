@@ -25,7 +25,7 @@ def sign_up():
 
 @app.route('/profile')
 def show_profile(organization, user_email):
-    with pathlib.Path(f'..\\user\\{organization}\\{user_email}.txt').open('r+') as file:
+    with pathlib.Path(f'..\\data\\user\\{user_email}.txt').open('r+') as file:
         user_profile = json.load(file)
         user = user_profile['user']
         password = user_profile['password']
@@ -36,10 +36,10 @@ def show_profile(organization, user_email):
 @app.route('/log_in', methods=['POST'])
 def log_in():
     user = flask.request.form.get('email')
-    if not pathlib.Path(f'..\\user\\{user}\\{user}.txt').exists():
+    if not pathlib.Path(f'..\\data\\user\\{user}.txt').exists():
         return error('No user with that email', 'sign_up')
     else:
-        with pathlib.Path(f'..\\user\\{user}\\{user}.txt').open('r') as file:
+        with pathlib.Path(f'..\\data\\user\\{user}.txt').open('r') as file:
             file = json.load(file)
         if file['password'] == flask.request.form.get('password'):
             flask.session['user'] = user
@@ -64,7 +64,7 @@ def sign_up_form():
     # check if email is already registered
     new_user = flask.request.form.get('email')
     organization = flask.request.form.get('organization')
-    if pathlib.Path(f'..\\user\\{organization}\\{new_user}').exists():
+    if pathlib.Path(f'..\\data\\user\\{new_user}').exists():
         return error('User already exits', 'sign_up')
 
     # check if email is valid
@@ -89,18 +89,25 @@ def sign_up_form():
 
 # create user folder and json file with all data
 def create_new_user(organization, email, password):
-    if organization == '':
-        organization = email
-    if not pathlib.Path(f'..\\user\\{organization}').exists():
-        pathlib.Path(f'..\\user\\{organization}').mkdir(exist_ok=True)
-    data = {'organization': organization,
-            'user': email,
-            'password': password,
-            'messages': {},
-            'friends': [],
-            }
-    with pathlib.Path(f'..\\user\\{email}\\profile.txt').open('w') as f:
-        json.dump(data, f)
+    if organization != '' and not pathlib.Path(f'..\\data\\inc\\{organization}').exists():
+        pathlib.Path(f'..\\data\\inc\\{organization}').mkdir(parents=True, exist_ok=True)
+        data_inc = {'admin': [],
+                    'employees': [],
+                    'clients': []}
+        with pathlib.Path(f'..\\data\\inc\\{organization}\\inc_profile.txt').open('w') as w:
+            data_inc['admin'].append(email)
+            data_inc['employees'].append(email)
+            json.dump(data_inc, w)
+
+    pathlib.Path(f'..\\data\\user\\{email}').mkdir()
+    data_user = {'organization': organization,
+                 'user': email,
+                 'password': password,
+                 'messages': {},
+                 'contacts': [],
+                 }
+    with pathlib.Path(f'..\\data\\user\\{email}\\user_profile.txt').open('w') as f:
+        json.dump(data_user, f)
 
 
 # generic error message, redirect to 'next_url'
