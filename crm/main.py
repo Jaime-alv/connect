@@ -2,6 +2,7 @@ import sys
 import re
 import json
 import pathlib
+import secrets
 import flask
 from flask import Flask
 
@@ -24,8 +25,8 @@ def sign_up():
 
 
 @app.route('/profile')
-def show_profile(organization, user_email):
-    with pathlib.Path(f'..\\data\\user\\{user_email}.txt').open('r+') as file:
+def show_profile(user_email):
+    with pathlib.Path(f'..\\data\\user\\{user_email}\\user_profile.txt').open('r+') as file:
         user_profile = json.load(file)
         user = user_profile['user']
         password = user_profile['password']
@@ -36,16 +37,22 @@ def show_profile(organization, user_email):
 @app.route('/log_in', methods=['POST'])
 def log_in():
     user = flask.request.form.get('email')
-    if not pathlib.Path(f'..\\data\\user\\{user}.txt').exists():
+    if not pathlib.Path(f'..\\data\\user\\{user}').exists():
         return error('No user with that email', 'sign_up')
     else:
-        with pathlib.Path(f'..\\data\\user\\{user}.txt').open('r') as file:
+        with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('r') as file:
             file = json.load(file)
         if file['password'] == flask.request.form.get('password'):
             flask.session['user'] = user
             return show_profile(user)
         else:
             return error('Incorrect password', 'login')
+
+
+@app.route('/logout')
+def log_ou():
+    flask.session.pop('user', None)
+    return flask.redirect(flask.url_for('index'))
 
 
 @app.route('/sign_up_form', methods=['POST'])
@@ -82,24 +89,27 @@ def sign_up_form():
             and password == password_confirm):
         create_new_user(organization, new_user, password)
         flask.session['user'] = new_user
-        return show_profile(organization, new_user)
+        return show_profile(new_user)
     else:
         return error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
 
 
 # create user folder and json file with all data
 def create_new_user(organization, email, password):
+    # create organization and add user as admin
     if organization != '' and not pathlib.Path(f'..\\data\\inc\\{organization}').exists():
         pathlib.Path(f'..\\data\\inc\\{organization}').mkdir(parents=True, exist_ok=True)
         data_inc = {'admin': [],
                     'employees': [],
-                    'clients': []}
+                    'clients': [],
+                    'client_data': {}}
         with pathlib.Path(f'..\\data\\inc\\{organization}\\inc_profile.txt').open('w') as w:
             data_inc['admin'].append(email)
             data_inc['employees'].append(email)
             json.dump(data_inc, w)
 
-    pathlib.Path(f'..\\data\\user\\{email}').mkdir()
+    # create user profile
+    pathlib.Path(f'..\\data\\user\\{email}').mkdir(parents=True)
     data_user = {'organization': organization,
                  'user': email,
                  'password': password,
@@ -115,7 +125,8 @@ def error(message, next_url):
     return flask.render_template('error.html', error_message=message, next=flask.url_for(next_url))
 
 
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+secret_key = secrets.token_hex()
+app.secret_key = secret_key
 if __name__ == '__main__':
     if sys.platform == 'darwin':  # different port if running on MacOsX
         app.run(debug=True, port=8080)
