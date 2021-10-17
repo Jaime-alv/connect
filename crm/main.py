@@ -30,14 +30,14 @@ def go_to_profile():
     if 'user' in flask.session:
         return functions.show_profile(flask.session['user'])
     else:
-        return functions.error('You are not logged in', 'login')
+        return error('You are not logged in', 'login')
 
 
 @app.route('/log_in', methods=['POST'])
 def log_in():
     user = flask.request.form.get('email')
     if not pathlib.Path(f'..\\data\\user\\{user}').exists():
-        return functions.error('No user with that email', 'sign_up')
+        return error('No user with that email', 'sign_up')
     else:
         with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('r') as file:
             file = json.load(file)
@@ -45,7 +45,7 @@ def log_in():
             flask.session['user'] = user
             return functions.show_profile(user)
         else:
-            return functions.error('Incorrect password', 'login')
+            return error('Incorrect password', 'login')
 
 
 @app.route('/logout')
@@ -65,19 +65,19 @@ def sign_up_form():
         if value == '':
             missing_field.append(field)
     if missing_field:
-        return functions.error(f'Missing inputs in {missing_field}', 'sign_up')
+        return error(f'Missing inputs in {missing_field}', 'sign_up')
 
     # check if email is already registered
     new_user = flask.request.form.get('email')
     organization = flask.request.form.get('organization')
     if pathlib.Path(f'..\\data\\user\\{new_user}').exists():
-        return functions.error('User already exits', 'sign_up')
+        return error('User already exits', 'sign_up')
 
     # check if email is valid
     email_regex = re.compile(r"[a-zA-Z0-9_.]+@[a-zA-Z0-9_.+]+")
     email = email_regex.search(new_user)
     if email is None:
-        return functions.error('email is not valid', 'sign_up')
+        return error('email is not valid', 'sign_up')
 
     # check if password is valid
     password = flask.request.form.get('password')
@@ -90,7 +90,34 @@ def sign_up_form():
         flask.session['user'] = new_user
         return functions.show_profile(new_user)
     else:
-        return functions.error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
+        return error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
+
+
+# change password
+@app.route('/new_password', methods=['POST'])
+def change_password():
+    new_password = flask.request.form.get('new_password')
+    confirm_new_password = flask.request.form.get('confirm_new_password')
+    user = flask.session['user']
+    with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('r') as file:
+        user_file = json.load(file)
+    if new_password == user_file['password']:
+        return error('Password already used, choose new password', 'go_to_profile')
+    elif new_password != user_file['password'] and (any(character.islower() for character in new_password)
+                                                    and any(character.isupper() for character in new_password)
+                                                    and any(character.isdigit() for character in new_password)
+                                                    and new_password == confirm_new_password):
+        user_file['password'] = new_password
+        with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('w') as write:
+            json.dump(user_file, write)
+        return go_to_profile()
+    elif new_password != confirm_new_password:
+        return error('Both password fields needs to be equal', 'go_to_profile')
+
+
+# generic error message, redirect to 'next_url'
+def error(message, next_url):
+    return flask.render_template('error.html', error_message=message, next=flask.url_for(next_url))
 
 
 secret_key = secrets.token_hex()
