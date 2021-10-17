@@ -4,6 +4,7 @@ import json
 import pathlib
 import secrets
 import flask
+import functions
 from flask import Flask
 
 app = Flask(__name__)
@@ -25,28 +26,26 @@ def sign_up():
 
 
 @app.route('/profile')
-def show_profile(user_email):
-    with pathlib.Path(f'..\\data\\user\\{user_email}\\user_profile.txt').open('r+') as file:
-        user_profile = json.load(file)
-        user = user_profile['user']
-        password = user_profile['password']
-        organization = user_profile['organization']
-    return flask.render_template('profile.html', user=user, password=password, organization=organization)
+def go_to_profile():
+    if 'user' in flask.session:
+        return functions.show_profile(flask.session['user'])
+    else:
+        return functions.error('You are not logged in', 'login')
 
 
 @app.route('/log_in', methods=['POST'])
 def log_in():
     user = flask.request.form.get('email')
     if not pathlib.Path(f'..\\data\\user\\{user}').exists():
-        return error('No user with that email', 'sign_up')
+        return functions.error('No user with that email', 'sign_up')
     else:
         with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('r') as file:
             file = json.load(file)
         if file['password'] == flask.request.form.get('password'):
             flask.session['user'] = user
-            return show_profile(user)
+            return functions.show_profile(user)
         else:
-            return error('Incorrect password', 'login')
+            return functions.error('Incorrect password', 'login')
 
 
 @app.route('/logout')
@@ -66,19 +65,19 @@ def sign_up_form():
         if value == '':
             missing_field.append(field)
     if missing_field:
-        return error(f'Missing inputs in {missing_field}', 'sign_up')
+        return functions.error(f'Missing inputs in {missing_field}', 'sign_up')
 
     # check if email is already registered
     new_user = flask.request.form.get('email')
     organization = flask.request.form.get('organization')
     if pathlib.Path(f'..\\data\\user\\{new_user}').exists():
-        return error('User already exits', 'sign_up')
+        return functions.error('User already exits', 'sign_up')
 
     # check if email is valid
     email_regex = re.compile(r"[a-zA-Z0-9_.]+@[a-zA-Z0-9_.+]+")
     email = email_regex.search(new_user)
     if email is None:
-        return error('email is not valid', 'sign_up')
+        return functions.error('email is not valid', 'sign_up')
 
     # check if password is valid
     password = flask.request.form.get('password')
@@ -87,42 +86,11 @@ def sign_up_form():
             and any(character.isupper() for character in password)
             and any(character.isdigit() for character in password)
             and password == password_confirm):
-        create_new_user(organization, new_user, password)
+        functions.create_new_user(organization, new_user, password)
         flask.session['user'] = new_user
-        return show_profile(new_user)
+        return functions.show_profile(new_user)
     else:
-        return error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
-
-
-# create user folder and json file with all data
-def create_new_user(organization, email, password):
-    # create organization and add user as admin
-    if organization != '' and not pathlib.Path(f'..\\data\\inc\\{organization}').exists():
-        pathlib.Path(f'..\\data\\inc\\{organization}').mkdir(parents=True, exist_ok=True)
-        data_inc = {'admin': [],
-                    'employees': [],
-                    'clients': [],
-                    'client_data': {}}
-        with pathlib.Path(f'..\\data\\inc\\{organization}\\inc_profile.txt').open('w') as w:
-            data_inc['admin'].append(email)
-            data_inc['employees'].append(email)
-            json.dump(data_inc, w)
-
-    # create user profile
-    pathlib.Path(f'..\\data\\user\\{email}').mkdir(parents=True)
-    data_user = {'organization': organization,
-                 'user': email,
-                 'password': password,
-                 'messages': {},
-                 'contacts': [],
-                 }
-    with pathlib.Path(f'..\\data\\user\\{email}\\user_profile.txt').open('w') as f:
-        json.dump(data_user, f)
-
-
-# generic error message, redirect to 'next_url'
-def error(message, next_url):
-    return flask.render_template('error.html', error_message=message, next=flask.url_for(next_url))
+        return functions.error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
 
 
 secret_key = secrets.token_hex()
