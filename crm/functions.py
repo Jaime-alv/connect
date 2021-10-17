@@ -15,11 +15,6 @@ def show_profile(user_email):
     return flask.render_template('profile.html', user=user, password=password, organization=organization)
 
 
-# generic error message, redirect to 'next_url'
-def error(message, next_url):
-    return flask.render_template('error.html', error_message=message, next=flask.url_for(next_url))
-
-
 # create user folder and json file with all data
 def create_new_user(organization, email, password):
     # create organization and add user as admin
