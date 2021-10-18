@@ -52,6 +52,7 @@ def new_client():
     missing_field = []
     must_have_fields = ['name', 'email', 'phone']
 
+    # form validation
     for field in must_have_fields:
         if flask.request.form.get(field) == '':
             missing_field.append(field)
@@ -59,6 +60,8 @@ def new_client():
         return error(f'Missing inputs in {missing_field}', 'clients')
     if flask.request.form.get('name') in inc_profile['clients']:
         return error(f'Client already exits', 'clients')
+
+    # get all fields and added to client's profile
     inc_profile['clients'].append(flask.request.form.get('name'))
     inc_profile['client_data'].setdefault('name', flask.request.form.get('name'))
     inc_profile['client_data'].setdefault('email', flask.request.form.get('email'))
