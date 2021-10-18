@@ -42,6 +42,34 @@ def access_to_client():
         return error('You are not logged in', 'login')
 
 
+# save client data
+@app.route('/new_client', methods=['POST'])
+def new_client():
+    user = flask.session['user']
+    user_profile = functions.load_user(user)
+    organization = user_profile['organization']
+    inc_profile = functions.load_organization(organization)
+    missing_field = []
+    must_have_fields = ['name', 'email', 'phone']
+
+    for field in must_have_fields:
+        if flask.request.form.get(field) == '':
+            missing_field.append(field)
+    if missing_field:
+        return error(f'Missing inputs in {missing_field}', 'clients')
+    if flask.request.form.get('name') in inc_profile['clients']:
+        return error(f'Client already exits', 'clients')
+    inc_profile['clients'].append(flask.request.form.get('name'))
+    inc_profile['client_data'].setdefault('name', flask.request.form.get('name'))
+    inc_profile['client_data'].setdefault('email', flask.request.form.get('email'))
+    inc_profile['client_data'].setdefault('phone', flask.request.form.get('phone'))
+    inc_profile['client_data'].setdefault('telegram', flask.request.form.get('telegram', None))
+    inc_profile['client_data'].setdefault('organization', flask.request.form.get('organization', None))
+    with pathlib.Path(f'..\\data\\inc\\{organization}\\inc_profile.txt').open('w') as new:
+        json.dump(inc_profile, new)
+    return flask.render_template('clients.html')
+
+
 # log in form into app
 @app.route('/log_in', methods=['POST'])
 def log_in():
