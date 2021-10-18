@@ -64,12 +64,12 @@ def new_message():
     if user_profile['messages'].get(today, None) is None:
         user_profile['messages'].setdefault(today, {})
         user_profile['messages'][today].setdefault(time, message)
-        with pathlib.Path(f'..\\data\\user\\{user_profile}\\user_profile.txt').open('w') as new:
+        with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('w') as new:
             json.dump(user_profile, new)
         return flask.render_template('messages.html')
     else:
         user_profile['messages'][today].setdefault(time, message)
-        with pathlib.Path(f'..\\data\\user\\{user_profile}\\user_profile.txt').open('w') as new:
+        with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('w') as new:
             json.dump(user_profile, new)
         return flask.render_template('messages.html')
 
