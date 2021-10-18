@@ -6,6 +6,7 @@ import secrets
 import flask
 import functions
 from flask import Flask
+import datetime
 
 app = Flask(__name__)
 
@@ -25,6 +26,7 @@ def sign_up():
     return app.send_static_file('sign_up.html')
 
 
+# load profile page
 @app.route('/profile')
 def go_to_profile():
     if 'user' in flask.session:
@@ -40,6 +42,36 @@ def access_to_client():
         return flask.render_template('clients.html')
     else:
         return error('You are not logged in', 'login')
+
+
+# load messages' page
+@app.route('/messages', methods=['POST', 'GET'])
+def access_to_messages():
+    if 'user' in flask.session:
+        return flask.render_template('messages.html')
+    else:
+        return error('You are not logged in', 'login')
+
+
+# process and save message
+@app.route('/new_message', methods=['POST'])
+def new_message():
+    user = flask.session['user']
+    message = flask.request.form.get('new_message')
+    user_profile = functions.load_user(user)
+    today = str(datetime.date.today().strftime('%d-%m-%Y'))
+    time = str(datetime.datetime.now().strftime('%H:%M:%S'))
+    if user_profile['messages'].get(today, None) is None:
+        user_profile['messages'].setdefault(today, {})
+        user_profile['messages'][today].setdefault(time, message)
+        with pathlib.Path(f'..\\data\\user\\{user_profile}\\user_profile.txt').open('w') as new:
+            json.dump(user_profile, new)
+        return flask.render_template('messages.html')
+    else:
+        user_profile['messages'][today].setdefault(time, message)
+        with pathlib.Path(f'..\\data\\user\\{user_profile}\\user_profile.txt').open('w') as new:
+            json.dump(user_profile, new)
+        return flask.render_template('messages.html')
 
 
 # save client data
