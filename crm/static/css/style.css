@@ -1,6 +1,14 @@
 body{
 font-family: Verdana}
 
+#aside{
+align: right;
+text-align: right;
+border: 2px solid #e3a144;
+border-radius: 4px;
+background: #86b5db;
+}
+
 #profile_table{
 text-align: center;
 border: 1px solid #e3a144
