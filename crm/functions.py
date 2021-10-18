@@ -3,7 +3,7 @@ import pathlib
 import flask
 
 
-# load profile user
+# load profile user and send it to profile page
 def show_profile(user_email):
     with pathlib.Path(f'..\\data\\user\\{user_email}\\user_profile.txt').open('r+') as file:
         user_profile = json.load(file)
@@ -18,7 +18,8 @@ def create_new_user(organization, email, password):
     # create organization and add user as admin
     if organization != '' and not pathlib.Path(f'..\\data\\inc\\{organization}').exists():
         pathlib.Path(f'..\\data\\inc\\{organization}').mkdir(parents=True, exist_ok=True)
-        data_inc = {'admin': [],
+        data_inc = {'name': organization,
+                    'admin': [],
                     'employees': [],
                     'clients': [],
                     'client_data': {}}

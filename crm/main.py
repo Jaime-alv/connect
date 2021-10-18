@@ -33,6 +33,7 @@ def go_to_profile():
         return error('You are not logged in', 'login')
 
 
+# log in form into app
 @app.route('/log_in', methods=['POST'])
 def log_in():
     user = flask.request.form.get('email')
@@ -47,6 +48,7 @@ def log_in():
             return error('Incorrect password', 'login')
 
 
+# log out from session
 @app.route('/logout')
 def log_out():
     flask.session.pop('user', None)
@@ -129,6 +131,23 @@ def delete_profile():
             del inc_profile['admin'][user]
         functions.remove_all(f'..\\data\\user\\{user}')
     return log_out()
+
+
+# load organization profile
+@app.route('/inc', methods=['GET'])
+def show_inc_profile():
+    if 'user' in flask.session:
+        user = flask.session['user']
+        user_profile = functions.load_user(user)
+        organization = user_profile['organization']
+        inc_profile = functions.load_organization(organization)
+        name = inc_profile['name']
+        admin = inc_profile['admin']
+        employees = inc_profile['employees']
+        clients = inc_profile['clients']
+        return flask.render_template('organization.html', name=name, admin=admin, employees=employees, clients=clients)
+    else:
+        return error('You are not logged in', 'login')
 
 
 # generic error message, redirect to 'next_url'
