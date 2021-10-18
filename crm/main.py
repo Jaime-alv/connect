@@ -33,6 +33,15 @@ def go_to_profile():
         return error('You are not logged in', 'login')
 
 
+# clients page
+@app.route('/clients')
+def access_to_client():
+    if 'user' in flask.session:
+        return flask.render_template('clients.html')
+    else:
+        return error('You are not logged in', 'login')
+
+
 # log in form into app
 @app.route('/log_in', methods=['POST'])
 def log_in():
@@ -148,6 +157,9 @@ def show_inc_profile():
         return flask.render_template('organization.html', name=name, admin=admin, employees=employees, clients=clients)
     else:
         return error('You are not logged in', 'login')
+
+
+# clients html
 
 
 # generic error message, redirect to 'next_url'
