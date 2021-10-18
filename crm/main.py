@@ -39,8 +39,7 @@ def log_in():
     if not pathlib.Path(f'..\\data\\user\\{user}').exists():
         return error('No user with that email', 'sign_up')
     else:
-        with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('r') as file:
-            file = json.load(file)
+        file = functions.load_user(user)
         if file['password'] == flask.request.form.get('password'):
             flask.session['user'] = user
             return functions.show_profile(user)
@@ -49,7 +48,7 @@ def log_in():
 
 
 @app.route('/logout')
-def log_ou():
+def log_out():
     flask.session.pop('user', None)
     return flask.redirect(flask.url_for('index'))
 
@@ -99,8 +98,7 @@ def change_password():
     new_password = flask.request.form.get('new_password')
     confirm_new_password = flask.request.form.get('confirm_new_password')
     user = flask.session['user']
-    with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('r') as file:
-        user_file = json.load(file)
+    user_file = functions.load_user(user)
     if new_password == user_file['password']:
         return error('Password already used, choose new password', 'go_to_profile')
     elif new_password != user_file['password'] and (any(character.islower() for character in new_password)
@@ -113,6 +111,24 @@ def change_password():
         return go_to_profile()
     elif new_password != confirm_new_password:
         return error('Both password fields needs to be equal', 'go_to_profile')
+
+
+# delete profile
+@app.route('/delete_profile', methods=['POST'])
+def delete_profile():
+    user = flask.session['user']
+    user_profile = functions.load_user(user)
+    organization = user_profile['organization']
+    inc_profile = functions.load_organization(organization)
+    if len(inc_profile['admin']) == 1:
+        functions.remove_all(f'..\\data\\inc\\{organization}')
+        functions.remove_all(f'..\\data\\user\\{user}')
+    else:
+        del inc_profile['employees'][user]
+        if user in inc_profile['admin']:
+            del inc_profile['admin'][user]
+        functions.remove_all(f'..\\data\\user\\{user}')
+    return log_out()
 
 
 # generic error message, redirect to 'next_url'

@@ -1,8 +1,6 @@
-import re
 import json
 import pathlib
 import flask
-from flask import Flask
 
 
 # load profile user
@@ -39,3 +37,28 @@ def create_new_user(organization, email, password):
                  }
     with pathlib.Path(f'..\\data\\user\\{email}\\user_profile.txt').open('w') as f:
         json.dump(data_user, f)
+
+
+# load user
+def load_user(user):
+    with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('r') as f:
+        user_profile = json.load(f)
+    return user_profile
+
+
+# load inc
+def load_organization(organization):
+    with pathlib.Path(f'..\\data\\inc\\{organization}\\inc_profile.txt').open('r') as f:
+        inc_profile = json.load(f)
+    return inc_profile
+
+
+# remove directory and contents
+def remove_all(path):
+    path = pathlib.Path(path)
+    for item in path.iterdir():
+        if item.is_dir():
+            remove_all(item)
+        else:
+            item.unlink()
+    path.rmdir()
