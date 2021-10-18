@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Organization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <link href="static/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="links">
+    <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a><br>
+    <a href="inc">Organization</a>|<a href="clients">Clients</a>|<a href="messages">Messages</a>
+</div>
+<h3>This is my organization profile</h3>
+<table id="org_profile" border="1" cellspacing="5" cellpadding="5" width="500">
+    <tr>
+        <td>Name:</td>
+        <td>{{ name }}</td>
+    </tr>
+    <tr>
+        <td>Admin:</td>
+        <td>
+            <ul>
+                {% for member in admin %}
+                <li>{{ member }}</li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Employees:</td>
+        <td>
+            <ul>
+                {% for member in employees %}
+                <li>{{ member }}</li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Clients:</td>
+        <td>
+            <ul>
+                {% for client in clients %}
+                <li>{{ client }}</li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

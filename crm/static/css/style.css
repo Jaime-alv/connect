@@ -1,7 +1,14 @@
+body{
+font-family: Verdana}
+
+#profile_table{
+text-align: center;
+border: 1px solid #e3a144
+}
 #links {
 text-align:right;
 font-size: 120%;
-border: 2px solid #e3a144; /*green*/
+border: 2px solid #e3a144;
 border-radius: 4px;
 background: #86b5db;
 padding:10px;
