@@ -5,6 +5,11 @@ import pathlib
 import flask
 
 
+# generic error message, redirect to 'next_url'
+def error(message, next_url):
+    return flask.render_template('error.html', error_message=message, next=flask.url_for(next_url))
+
+
 # load profile user and send it to profile page
 def show_profile(user_email):
     with pathlib.Path(f'..\\data\\user\\{user_email}\\user_profile.txt').open('r+') as file:
@@ -13,6 +18,21 @@ def show_profile(user_email):
         password = user_profile['password']
         organization = user_profile['organization']
     return flask.render_template('profile.html', user=user, password=password, organization=organization)
+
+
+# show inc profile if user in admin group.
+def show_inc_profile(user):
+    user_profile = load_user(user)
+    organization = user_profile['organization']
+    inc_profile = load_organization(organization)
+    if user_profile['name'] in inc_profile['admin']:
+        name = inc_profile['name']
+        admin = inc_profile['admin']
+        employees = inc_profile['employees']
+        clients = inc_profile['clients']
+        return flask.render_template('organization.html', name=name, admin=admin, employees=employees, clients=clients)
+    else:
+        return error("You don't have permit to access this section", 'home')
 
 
 # create user folder and json file with all data

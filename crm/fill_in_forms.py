@@ -14,14 +14,14 @@ import main
 def log_in():
     user = flask.request.form.get('email')
     if not pathlib.Path(f'..\\data\\user\\{user}').exists():
-        return error('No user with that email', 'sign_up')
+        return functions.error('No user with that email', 'sign_up')
     else:
         file = functions.load_user(user)
         if file['password'] == flask.request.form.get('password'):
             flask.session['user'] = user
             return functions.show_profile(user)
         else:
-            return error('Incorrect password', 'login')
+            return functions.error('Incorrect password', 'login')
 
 
 # process and save message
@@ -42,11 +42,6 @@ def new_message(user):
         return flask.render_template('messages.html')
 
 
-# generic error message, redirect to 'next_url'
-def error(message, next_url):
-    return flask.render_template('error.html', error_message=message, next=flask.url_for(next_url))
-
-
 # new client data form
 def new_client(user):
     user_profile = functions.load_user(user)
@@ -60,9 +55,9 @@ def new_client(user):
         if flask.request.form.get(field) == '':
             missing_field.append(field)
     if missing_field:
-        return error(f'Missing inputs in {missing_field}', 'clients')
+        return functions.error(f'Missing inputs in {missing_field}', 'clients')
     if flask.request.form.get('name') in inc_profile['clients']:
-        return error(f'Client already exits', 'clients')
+        return functions.error(f'Client already exits', 'clients')
 
     # get all fields and added to client's profile
     inc_profile['clients'].append(flask.request.form.get('name'))
@@ -86,19 +81,19 @@ def sign_up():
         if value == '':
             missing_field.append(field)
     if missing_field:
-        return error(f'Missing inputs in {missing_field}', 'sign_up')
+        return functions.error(f'Missing inputs in {missing_field}', 'sign_up')
 
     # check if email is already registered
     new_user = flask.request.form.get('email')
     organization = flask.request.form.get('organization')
     if pathlib.Path(f'..\\data\\user\\{new_user}').exists():
-        return error('User already exits', 'sign_up')
+        return functions.error('User already exits', 'sign_up')
 
     # check if email is valid
     email_regex = re.compile(r"[a-zA-Z0-9_.]+@[a-zA-Z0-9_.+]+")
     email = email_regex.search(new_user)
     if email is None:
-        return error('email is not valid', 'sign_up')
+        return functions.error('email is not valid', 'sign_up')
 
     # check if password is valid
     password = flask.request.form.get('password')
@@ -111,7 +106,7 @@ def sign_up():
         flask.session['user'] = new_user
         return functions.show_profile(new_user)
     else:
-        return error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
+        return functions.error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
 
 
 # change password
@@ -121,7 +116,7 @@ def change_password(user):
     user_file = functions.load_user(user)
 
     if new_password == user_file['password']:
-        return error('Password already used, choose new password', 'go_to_profile')
+        return functions.error('Password already used, choose new password', 'go_to_profile')
     elif new_password != user_file['password'] and (any(character.islower() for character in new_password)
                                                     and any(character.isupper() for character in new_password)
                                                     and any(character.isdigit() for character in new_password)
@@ -130,4 +125,4 @@ def change_password(user):
         functions.save_user(user_file, user)
         return main.go_to_profile()
     elif new_password != confirm_new_password:
-        return error('Both password fields needs to be equal', 'go_to_profile')
+        return functions.error('Both password fields needs to be equal', 'go_to_profile')

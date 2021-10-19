@@ -31,7 +31,7 @@ def go_to_profile():
     if 'user' in flask.session:
         return functions.show_profile(flask.session['user'])
     else:
-        return fill_in_forms.error('You are not logged in', 'login')
+        return functions.error('You are not logged in', 'login')
 
 
 # clients page
@@ -40,7 +40,7 @@ def access_to_client():
     if 'user' in flask.session:
         return flask.render_template('clients.html')
     else:
-        return fill_in_forms.error('You are not logged in', 'login')
+        return functions.error('You are not logged in', 'login')
 
 
 # load messages' page
@@ -49,7 +49,7 @@ def access_to_messages():
     if 'user' in flask.session:
         return flask.render_template('messages.html')
     else:
-        return fill_in_forms.error('You are not logged in', 'login')
+        return functions.error('You are not logged in', 'login')
 
 
 # process and save message
@@ -103,16 +103,9 @@ def delete_profile():
 def show_inc_profile():
     if 'user' in flask.session:
         user = flask.session['user']
-        user_profile = functions.load_user(user)
-        organization = user_profile['organization']
-        inc_profile = functions.load_organization(organization)
-        name = inc_profile['name']
-        admin = inc_profile['admin']
-        employees = inc_profile['employees']
-        clients = inc_profile['clients']
-        return flask.render_template('organization.html', name=name, admin=admin, employees=employees, clients=clients)
+        functions.show_inc_profile(user)
     else:
-        return fill_in_forms.error('You are not logged in', 'login')
+        return functions.error('You are not logged in', 'login')
 
 
 secret_key = secrets.token_hex()
