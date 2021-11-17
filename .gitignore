@@ -3,8 +3,7 @@ tests/
 .idea/
 venv/
 
-#content in user/
-user/*
+#content in data/
 data/*
 
 # python cache
