@@ -1,5 +1,5 @@
-# Copyright (C) 2021 Jaime Álvarez Fernández
-# This file perform various basics tasks. (loading, saving, deleting)
+# Copyright (C) 2021 Jaime Alvarez Fernandez
+# This file performs various basics tasks. (loading, saving, deleting)
 import json
 import pathlib
 import flask
@@ -25,7 +25,7 @@ def show_inc_profile(user):
     user_profile = load_user(user)
     organization = user_profile['organization']
     inc_profile = load_organization(organization)
-    if user_profile['name'] in inc_profile['admin']:
+    if user_profile['user'] in inc_profile['admin']:
         name = inc_profile['name']
         admin = inc_profile['admin']
         employees = inc_profile['employees']
