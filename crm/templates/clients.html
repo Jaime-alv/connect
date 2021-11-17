@@ -10,52 +10,61 @@
 <div id="links">
     <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a>
 </div>
-<div id="aside">
-    <a href="inc">Organization</a><br>
-    <a href="clients">Clients</a><br>
-    <a href="messages">Messages</a>
-</div>
-Add, remove or modify client's data
-<form name="new_client" action="new_client" method="post">
-    <table>
-        <tr>
-            <td>Name:</td>
-            <td>
-                <input type="text" name="name">
-            </td>
-        </tr>
-        <tr>
-            <td>Organization:</td>
-            <td>
-                <input type="text" name="organization">
-            </td>
-        </tr>
-        <tr>
-            <td>Email:</td>
-            <td>
-                <input type="text" name="email">
-            </td>
-        </tr>
-        <tr>
-            <td>Telegram address:</td>
-            <td>
-                <input type="text" name="telegram">
-            </td>
-        </tr>
-        <tr>
-            <td>Phone number:</td>
-            <td>
-                <input type="text" name="phone">
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <input type="submit" name="submit" value="Submit">
-                <input type="reset" name="reset" value="Reset">
-            </td>
-        </tr>
-    </table>
-</form>
+<table id="main" width="100%">
+    <tr>
+        <td>
+            Add, remove or modify client's data
+            <form name="new_client" action="new_client" method="post">
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td>
+                            <input type="text" name="name">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Organization:</td>
+                        <td>
+                            <input type="text" name="organization">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Email:</td>
+                        <td>
+                            <input type="text" name="email">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Telegram address:</td>
+                        <td>
+                            <input type="text" name="telegram">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Phone number:</td>
+                        <td>
+                            <input type="text" name="phone">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input type="submit" name="submit" value="Submit">
+                            <input type="reset" name="reset" value="Reset">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </td>
+        <td>
+            <div id="aside">
+                <a href="inc">Organization</a><br>
+                <a href="clients">Clients</a><br>
+                <a href="messages">Messages</a>
+            </div>
+        </td>
+
+    </tr>
+</table>
 </body>
 </html>

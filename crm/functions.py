@@ -102,7 +102,6 @@ def remove(user):
         if user in inc_profile['admin']:
             del inc_profile['admin'][user]
         remove_all(f'..\\data\\user\\{user}')
-    return main.log_out()
 
 
 def remove_all(path):

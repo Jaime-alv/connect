@@ -8,50 +8,64 @@
 </head>
 <body>
 <div id="links">
-    <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a><br>
-    <a href="inc">Organization</a>|<a href="clients">Clients</a>|<a href="messages">Messages</a>
+    <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a>
 </div>
-<h3>Hello, this is my profile</h3>
-<table id="profile_table" border="1" cellspacing="5" cellpadding="5" width="500">
-    <tr>
-        <td>User email:</td>
-        <td>{{ user }}</td>
-    </tr>
-    <tr>
-        <td>Organization:</td>
-        <td>{{ organization }}</td>
-    </tr>
+<table id="main" width="100%">
     <tr>
         <td>
-            Profile image:
+            <h3>Hello, this is my profile</h3>
+            <table id="profile_table" border="1" cellspacing="5" cellpadding="5" width="500">
+                <tr>
+                    <td>User email:</td>
+                    <td>{{ user }}</td>
+                </tr>
+                <tr>
+                    <td>Organization:</td>
+                    <td>{{ organization }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        Profile image:
+                    </td>
+                    <td>
+                        Upload
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top">
+                        New password:<br>
+                        Confirm new password:
+                    </td>
+                    <td align="center">
+                        <form name="new_password" action="new_password" method="post">
+                            <input type="password" name="new_password"><br>
+                            <input type="password" name="confirm_new_password"><br>
+                            <p><input type="submit" name="submit" value="Submit"></p>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Delete profile
+                    </td>
+                    <td align="center">
+                        <form name="delete profile" action="delete_profile" method="post">
+                            <input type="submit" name="submit" value="Delete">
+                        </form>
+                    </td>
+                </tr>
+            </table>
         </td>
         <td>
-            Upload
+            <div id="aside">
+                <a href="inc">Organization</a><br>
+                <a href="clients">Clients</a><br>
+                <a href="messages">Messages</a>
+            </div>
         </td>
-    </tr>
-    <tr>
-        <td valign="top">
-            New password:<br>
-            Confirm new password:
-        </td>
-        <td align="center">
-            <form name="new_password" action="new_password" method="post">
-                <input type="password" name="new_password"><br>
-                <input type="password" name="confirm_new_password"><br>
-                <p><input type="submit" name="submit" value="Submit"></p>
-            </form>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Delete profile
-        </td>
-        <td align="center">
-            <form name="delete profile" action="delete_profile" method="post">
-                <input type="submit" name="submit" value="Delete">
-            </form>
-        </td>
+
     </tr>
 </table>
+
 </body>
 </html>
