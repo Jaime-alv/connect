@@ -7,7 +7,6 @@ import flask
 import re
 import functions
 from flask import Flask
-import fill_in_forms
 
 app = Flask(__name__)
 
@@ -52,7 +51,10 @@ def access_to_client():
 @app.route('/messages', methods=['POST', 'GET'])
 def access_to_messages():
     if 'user' in flask.session:
-        return flask.render_template('messages.html')
+        user = flask.session['user']
+        user_profile = functions.load_user(user)
+        messages = user_profile['messages']
+        return flask.render_template('messages.html', messages=messages)
     else:
         return functions.error('You are not logged in', 'login')
 
@@ -61,8 +63,8 @@ def access_to_messages():
 @app.route('/new_message', methods=['POST'])
 def new_message():
     user = flask.session['user']
-    fill_in_forms.new_message(user)
-    return flask.render_template('messages.html')
+    functions.new_message(user)
+    return access_to_messages()
 
 
 # save client data
@@ -97,7 +99,7 @@ def new_client():
 
 # log in form into app
 @app.route('/log_in', methods=['POST'])
-def log_in():
+def log_in_server():
     user = flask.request.form.get('email')
     if not pathlib.Path(f'..\\data\\user\\{user}').exists():
         return functions.error('No user with that email', 'sign_up')

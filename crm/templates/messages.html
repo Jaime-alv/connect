@@ -11,16 +11,45 @@
 <div id="links">
     <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a>
 </div>
-<table id="main" width="100%">
+<table id="main" width="100%" border="1" cellspacing="1" cellpadding="5">
     <tr>
         <td>
-            <form name="new_message" action="new_message" method="post">
-                <p><input type="text" name="new_message" size="25%"></p>
-                <input type="submit" name="submit" value="Submit">
-            </form>
-            <form name="load_messages" action="load_messages" method="get">
-
-            </form>
+            <table width="100%" border="1" cellspacing="5" cellpadding="5">
+                <tr>
+                    <td>
+                        <form name="new_message" action="new_message" method="post">
+                            <p><input type="text" name="new_message" size="25%"></p>
+                            <input type="submit" name="submit" value="Submit">
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <form name="load_messages" action="load_messages" method="get">
+                            {% for text_date in messages %}
+                                <table border="1">
+                                    <tr>
+                                        <td>Date:</td>
+                                        <td>Message:</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            {{ text_date }}
+                                        </td>
+                                        <td>
+                                            <ul>
+                                                {% for conversation in messages[text_date] %}
+                                                <li>{{ conversation }}:<br>{{ messages[text_date][conversation] }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            {% endfor %}
+                        </form>
+                    </td>
+                </tr>
+            </table>
         </td>
         <td>
             <div id="aside">

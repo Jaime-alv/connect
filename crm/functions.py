@@ -3,6 +3,7 @@
 import json
 import pathlib
 import flask
+import datetime
 
 
 # generic error message, redirect to 'next_url'
@@ -90,7 +91,6 @@ def save_inc(inc_file, organization):
 
 # remove directory and contents
 def remove(user):
-    import main
     user_profile = load_user(user)
     organization = user_profile['organization']
     inc_profile = load_organization(organization)
@@ -112,3 +112,19 @@ def remove_all(path):
         else:
             item.unlink()
     path.rmdir()
+
+
+# process and save message
+def new_message(user):
+    message = flask.request.form.get('new_message')
+    user_profile = load_user(user)
+    today = str(datetime.date.today().strftime('%d-%m-%Y'))
+    time = str(datetime.datetime.now().strftime('%H:%M:%S'))
+    if user_profile['messages'].get(today, None) is None:
+        user_profile['messages'].setdefault(today, {})
+        user_profile['messages'][today].setdefault(time, message)
+        with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('w') as new:
+            json.dump(user_profile, new)
+    else:
+        user_profile['messages'][today].setdefault(time, message)
+        save_user(user_profile, user)
