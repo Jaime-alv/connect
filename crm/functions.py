@@ -41,6 +41,7 @@ def create_new_user(organization, email, password):
     # create organization and add user as admin
     if organization != '' and not pathlib.Path(f'..\\data\\inc\\{organization}').exists():
         pathlib.Path(f'..\\data\\inc\\{organization}').mkdir(parents=True, exist_ok=True)
+        pathlib.Path(f'..\\data\\inc\\{organization}\\customers').mkdir(exist_ok=True)
         data_inc = {'name': organization,
                     'admin': [],
                     'employees': [],

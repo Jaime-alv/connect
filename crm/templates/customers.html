@@ -25,14 +25,16 @@
                     {% for customer in customers %}
                     <tr>
                         <td>{{ customers[customer]['email'] }}</td>
-                        <td>{{ customers[customer]['name'] }}</td>
+                        <td>{{ customers[customer]['first_name'] }}<br>{{ customers[customer]['last_name'] }}</td>
                         <td>{{ customers[customer]['phone'] }}</td>
                         <td>{{ customers[customer]['telegram'] }}</td>
                         <td>{{ customers[customer]['organization'] }}</td>
                     </tr>
                     {% endfor %}
                 </table>
-
+            <form name="delete_all_customers" action="delete_all_customers" method="post">
+                <input type="submit" value="Delete all">
+            </form>
         </td>
         <td id="aside" width="130" height="100%">
             <a href="inc">Organization</a><br>

@@ -6,6 +6,7 @@ import secrets
 import flask
 import re
 import functions
+import datetime
 from flask import Flask
 
 app = Flask(__name__)
@@ -79,36 +80,55 @@ def new_message():
 
 
 # save client data
+# template/new_customer.html
 @app.route('/new_client', methods=['POST'])
 def new_client():
     user = flask.session['user']
-    organization = functions.load_user(user)['organization']
     inc_profile = functions.load_inc_with(user)
     missing_field = []
-    must_have_fields = ['name', 'email']
+    must_have_fields = ['first_name', 'email', 'last_name']
 
     # form validation
     for field in must_have_fields:
         if flask.request.form.get(field) == '':
             missing_field.append(field)
     if missing_field:
-        return functions.error(f'Missing inputs in {missing_field}', 'new_customer')
+        return functions.error(f'Missing inputs in {missing_field}', 'access_to_client')
     if flask.request.form.get('email') in inc_profile['client_data']:
-        return functions.error(f'Client already exits', 'new_customer')
+        return functions.error(f'Client already exits', 'access_to_client')
 
     # get all fields and added to client's profile
     email = flask.request.form.get('email')
     inc_profile['client_data'].setdefault(email, {})
-    inc_profile['client_data'][email].setdefault('name', flask.request.form.get('name'))
+    inc_profile['client_data'][email].setdefault('first_name', flask.request.form.get('first_name'))
+    inc_profile['client_data'][email].setdefault('last_name', flask.request.form.get('last_name'))
     inc_profile['client_data'][email].setdefault('email', flask.request.form.get('email'))
-    inc_profile['client_data'][email].setdefault('phone', flask.request.form.get('phone', None))
-    inc_profile['client_data'][email].setdefault('telegram', flask.request.form.get('telegram', None))
-    inc_profile['client_data'][email].setdefault('organization', flask.request.form.get('organization', None))
-    functions.save_inc(inc_profile, organization)
+    inc_profile['client_data'][email].setdefault('phone', flask.request.form.get('phone'))
+    inc_profile['client_data'][email].setdefault('telegram', flask.request.form.get('telegram'))
+    inc_profile['client_data'][email].setdefault('organization', flask.request.form.get('organization'))
+    date_now = datetime.datetime.now()
+    file_name = date_now.strftime(f"{flask.request.form.get('first_name')[0].lower()}"
+                                  f"%f%Y%m%d"
+                                  f"{flask.request.form.get('last_name')[0].lower()}")
+    inc_profile['client_data'][email].setdefault('dialog_file', file_name)
+    functions.save_inc(inc_profile, inc_profile['name'])
+    pathlib.Path(f'..\\data\\inc\\{inc_profile["name"]}\\customers\\{file_name}.txt').open('w')
     return flask.render_template('new_customer.html')
 
 
+# delete all customer list
+# template/customers.html
+@app.route('/delete_all_customers', methods=['POST'])
+def delete_all_customers():
+    user = flask.session['user']
+    inc_profile = functions.load_inc_with(user)
+    inc_profile['client_data'].clear()
+    functions.save_inc(inc_profile, inc_profile['name'])
+    return flask.render_template('customers.html')
+
+
 # log in form into app
+# static/login.html
 @app.route('/log_in', methods=['POST'])
 def log_in_server():
     user = flask.request.form.get('email')
