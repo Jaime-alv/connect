@@ -210,7 +210,7 @@ def show_inc_profile():
             name = inc_profile['name']
             admin = inc_profile['admin']
             employees = inc_profile['employees']
-            clients = inc_profile['clients']
+            clients = inc_profile['client_data']
             return flask.render_template('organization.html', name=name, admin=admin, employees=employees,
                                          clients=clients)
         else:

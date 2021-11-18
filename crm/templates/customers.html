@@ -24,11 +24,11 @@
                     </tr>
                     {% for customer in customers %}
                     <tr>
-                        <td>{{ customer[email] }}</td>
-                        <td>{{ customer }}</td>
-                        <td>{{ customer }}</td>
-                        <td>{{ customer }}</td>
-                        <td>{{ customer }}</td>
+                        <td>{{ customers[customer]['email'] }}</td>
+                        <td>{{ customers[customer]['name'] }}</td>
+                        <td>{{ customers[customer]['phone'] }}</td>
+                        <td>{{ customers[customer]['telegram'] }}</td>
+                        <td>{{ customers[customer]['organization'] }}</td>
                     </tr>
                     {% endfor %}
                 </table>
