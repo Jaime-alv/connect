@@ -14,7 +14,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET'])
 def index():
     if 'user' in flask.session:
-        return flask.render_template('general_template.html')
+        return flask.render_template('home_template.html')
     else:
         return app.send_static_file('index.html')
 
