@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <link href="static/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="links">
+    <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a>
+</div>
+<table id="main" width="100%">
+    <tr>
+        <td>
+            Customers:
+                <table border="1" width="100%">
+                    <tr>
+                        <td>Email</td>
+                        <td>Name</td>
+                        <td>Phone number</td>
+                        <td>Telegram address</td>
+                        <td>Organization</td>
+                    </tr>
+                    {% for customer in customers %}
+                    <tr>
+                        <td>{{ customers[customer]['email'] }}</td>
+                        <td>{{ customers[customer]['name'] }}</td>
+                        <td>{{ customers[customer]['phone'] }}</td>
+                        <td>{{ customers[customer]['telegram'] }}</td>
+                        <td>{{ customers[customer]['organization'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+        </td>
+        <td id="aside" width="130" height="100%">
+            <a href="inc">Organization</a><br>
+            <a href="new_customer">New customer</a>
+            <a href="customers">Customers</a><br>
+            <a href="messages">Messages</a>
+        </td>
+
+    </tr>
+</table>
+</body>
+</html>

@@ -1,8 +1,9 @@
-# Copyright (C) 2021 Jaime Álvarez Fernández
-# This file perform various basics tasks. (loading, saving, deleting)
+# Copyright (C) 2021 Jaime Alvarez Fernandez
+# This file performs various basics tasks. (loading, saving, deleting)
 import json
 import pathlib
 import flask
+import datetime
 
 
 # generic error message, redirect to 'next_url'
@@ -25,11 +26,11 @@ def show_inc_profile(user):
     user_profile = load_user(user)
     organization = user_profile['organization']
     inc_profile = load_organization(organization)
-    if user_profile['name'] in inc_profile['admin']:
+    if user_profile['user'] in inc_profile['admin']:
         name = inc_profile['name']
         admin = inc_profile['admin']
         employees = inc_profile['employees']
-        clients = inc_profile['clients']
+        clients = inc_profile['client_data']
         return flask.render_template('organization.html', name=name, admin=admin, employees=employees, clients=clients)
     else:
         return error("You don't have permit to access this section", 'home')
@@ -88,9 +89,16 @@ def save_inc(inc_file, organization):
         json.dump(inc_file, write)
 
 
+# load organization only with user
+def load_inc_with(user):
+    user_profile = load_user(user)
+    organization = user_profile['organization']
+    inc_profile = load_organization(organization)
+    return inc_profile
+
+
 # remove directory and contents
 def remove(user):
-    import main
     user_profile = load_user(user)
     organization = user_profile['organization']
     inc_profile = load_organization(organization)
@@ -102,7 +110,6 @@ def remove(user):
         if user in inc_profile['admin']:
             del inc_profile['admin'][user]
         remove_all(f'..\\data\\user\\{user}')
-    return main.log_out()
 
 
 def remove_all(path):
@@ -113,3 +120,19 @@ def remove_all(path):
         else:
             item.unlink()
     path.rmdir()
+
+
+# process and save message
+def new_message(user):
+    message = flask.request.form.get('new_message')
+    user_profile = load_user(user)
+    today = str(datetime.date.today().strftime('%d-%m-%Y'))
+    time = str(datetime.datetime.now().strftime('%H:%M:%S'))
+    if user_profile['messages'].get(today, None) is None:
+        user_profile['messages'].setdefault(today, {})
+        user_profile['messages'][today].setdefault(time, message)
+        with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('w') as new:
+            json.dump(user_profile, new)
+    else:
+        user_profile['messages'][today].setdefault(time, message)
+        save_user(user_profile, user)

@@ -5,22 +5,59 @@
     <title>messages</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" >
     <link href="static/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div id="links">
     <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a>
 </div>
-<div id="aside">
-    <a href="inc">Organization</a><br>
-    <a href="clients">Clients</a><br>
-    <a href="messages">Messages</a>
-</div>
-<form name="new_message" action="new_message" method="post">
-    <p><input type="text" name="new_message" size="75"></p>
-    <input type="submit" name="submit" value="Submit">
-</form>
-<form name="load_messages" action="load_messages" method="get">
-
-</form>
+<table id="main" width="100%" border="1" cellspacing="1" cellpadding="5">
+    <tr>
+        <td>
+            <table width="100%" border="1" cellspacing="5" cellpadding="5">
+                <tr>
+                    <td>
+                        <form name="new_message" action="new_message" method="post">
+                            <p><input type="text" name="new_message" size="25%" autocomplete="off"></p>
+                            <input type="submit" name="submit" value="Submit">
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <form name="load_messages" action="load_messages" method="get">
+                                <table border="1">
+                                    <tr>
+                                        <td>Date:</td>
+                                        <td>Message:</td>
+                                    </tr>
+                                    {% for date in messages %}
+                                    <tr>
+                                        <td>
+                                            {{ date }}
+                                        </td>
+                                        <td>
+                                            <ul>
+                                                {% for time in messages[date] %}
+                                                <li>{{ time }}:<br>{{ messages[date][time] }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td id="aside" width="130" height="100%">
+            <a href="inc">Organization</a><br>
+            <a href="new_customer">New customer</a>
+            <a href="customers">Customers</a><br>
+            <a href="messages">Messages</a>
+        </td>
+    </tr>
+</table>
 </body>
 </html>

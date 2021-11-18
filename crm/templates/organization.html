@@ -10,46 +10,54 @@
 <div id="links">
     <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a>
 </div>
-<div id="aside">
-    <a href="inc">Organization</a><br>
-    <a href="clients">Clients</a><br>
-    <a href="messages">Messages</a>
-</div>
-<h3>This is my organization profile</h3>
-<table id="org_profile" border="1" cellspacing="5" cellpadding="5" width="500">
+<table id="main" width="100%">
     <tr>
-        <td>Name:</td>
-        <td>{{ name }}</td>
-    </tr>
-    <tr>
-        <td>Admin:</td>
         <td>
-            <ul>
-                {% for member in admin %}
-                <li>{{ member }}</li>
-                {% endfor %}
-            </ul>
+            <h3>This is my organization profile</h3>
+            <table id="org_profile" border="1" cellspacing="5" cellpadding="5" width="500">
+                <tr>
+                    <td>Name:</td>
+                    <td>{{ name }}</td>
+                </tr>
+                <tr>
+                    <td>Admin:</td>
+                    <td>
+                        <ul>
+                            {% for member in admin %}
+                            <li>{{ member }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Employees:</td>
+                    <td>
+                        <ul>
+                            {% for member in employees %}
+                            <li>{{ member }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Clients:</td>
+                    <td>
+                        <ul>
+                            {% for client in clients %}
+                            <li>{{ client }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            </table>
         </td>
-    </tr>
-    <tr>
-        <td>Employees:</td>
-        <td>
-            <ul>
-                {% for member in employees %}
-                <li>{{ member }}</li>
-                {% endfor %}
-            </ul>
+        <td id="aside" width="130" height="100%">
+            <a href="inc">Organization</a><br>
+            <a href="new_customer">New customer</a>
+            <a href="customers">Customers</a><br>
+            <a href="messages">Messages</a>
         </td>
-    </tr>
-    <tr>
-        <td>Clients:</td>
-        <td>
-            <ul>
-                {% for client in clients %}
-                <li>{{ client }}</li>
-                {% endfor %}
-            </ul>
-        </td>
+
     </tr>
 </table>
 </body>
