@@ -26,39 +26,37 @@
                 <tr>
                     <td>
                         <form name="load_messages" action="load_messages" method="get">
-                            {% for text_date in messages %}
                                 <table border="1">
                                     <tr>
                                         <td>Date:</td>
                                         <td>Message:</td>
                                     </tr>
+                                    {% for date in messages %}
                                     <tr>
                                         <td>
-                                            {{ text_date }}
+                                            {{ date }}
                                         </td>
                                         <td>
                                             <ul>
-                                                {% for conversation in messages[text_date] %}
-                                                <li>{{ conversation }}:<br>{{ messages[text_date][conversation] }}</li>
+                                                {% for time in messages[date] %}
+                                                <li>{{ time }}:<br>{{ messages[date][time] }}</li>
                                                 {% endfor %}
                                             </ul>
                                         </td>
                                     </tr>
+                                    {% endfor %}
                                 </table>
-                            {% endfor %}
                         </form>
                     </td>
                 </tr>
             </table>
         </td>
-        <td>
-            <div id="aside">
-                <a href="inc">Organization</a><br>
-                <a href="clients">Clients</a><br>
-                <a href="messages">Messages</a>
-            </div>
+        <td id="aside" width="130" height="100%">
+            <a href="inc">Organization</a><br>
+            <a href="new_customer">New customer</a>
+            <a href="customers">Customers</a><br>
+            <a href="messages">Messages</a>
         </td>
-
     </tr>
 </table>
 </body>

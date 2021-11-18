@@ -6,11 +6,10 @@ font-family: Verdana}
 
 #aside{
 align: right;
-text-align: right;
+text-align: left;
 border: 2px solid #e3a144;
 border-radius: 4px;
 background: #86b5db;
-width: 120px;
 padding: 5px;
 }
 

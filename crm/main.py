@@ -38,11 +38,22 @@ def go_to_profile():
         return functions.error('You are not logged in', 'login')
 
 
-# clients page
-@app.route('/clients')
+# add new customer
+@app.route('/new_customer')
 def access_to_client():
     if 'user' in flask.session:
-        return flask.render_template('clients.html')
+        return flask.render_template('new_customer.html')
+    else:
+        return functions.error('You are not logged in', 'login')
+
+
+# display current customers and their data
+@app.route('/customers', methods=['GET'])
+def show_customers():
+    if 'user' in flask.session:
+        user = flask.session['user']
+        customers = functions.load_inc_with(user)['client_data']
+        return flask.render_template('customers.html', customers=customers)
     else:
         return functions.error('You are not logged in', 'login')
 
@@ -71,30 +82,30 @@ def new_message():
 @app.route('/new_client', methods=['POST'])
 def new_client():
     user = flask.session['user']
-    user_profile = functions.load_user(user)
-    organization = user_profile['organization']
-    inc_profile = functions.load_organization(organization)
+    organization = functions.load_user(user)['organization']
+    inc_profile = functions.load_inc_with(user)
     missing_field = []
-    must_have_fields = ['name', 'email', 'phone']
+    must_have_fields = ['name', 'email']
 
     # form validation
     for field in must_have_fields:
         if flask.request.form.get(field) == '':
             missing_field.append(field)
     if missing_field:
-        return functions.error(f'Missing inputs in {missing_field}', 'clients')
-    if flask.request.form.get('name') in inc_profile['clients']:
-        return functions.error(f'Client already exits', 'clients')
+        return functions.error(f'Missing inputs in {missing_field}', 'new_customer')
+    if flask.request.form.get('email') in inc_profile['client_data']:
+        return functions.error(f'Client already exits', 'new_customer')
 
     # get all fields and added to client's profile
-    inc_profile['clients'].append(flask.request.form.get('name'))
-    inc_profile['client_data'].setdefault('name', flask.request.form.get('name'))
-    inc_profile['client_data'].setdefault('email', flask.request.form.get('email'))
-    inc_profile['client_data'].setdefault('phone', flask.request.form.get('phone'))
-    inc_profile['client_data'].setdefault('telegram', flask.request.form.get('telegram', None))
-    inc_profile['client_data'].setdefault('organization', flask.request.form.get('organization', None))
+    email = flask.request.form.get('email')
+    inc_profile['client_data'].setdefault(email, {})
+    inc_profile['client_data'][email].setdefault('name', flask.request.form.get('name'))
+    inc_profile['client_data'][email].setdefault('email', flask.request.form.get('email'))
+    inc_profile['client_data'][email].setdefault('phone', flask.request.form.get('phone', None))
+    inc_profile['client_data'][email].setdefault('telegram', flask.request.form.get('telegram', None))
+    inc_profile['client_data'][email].setdefault('organization', flask.request.form.get('organization', None))
     functions.save_inc(inc_profile, organization)
-    return flask.render_template('clients.html')
+    return flask.render_template('new_customer.html')
 
 
 # log in form into app

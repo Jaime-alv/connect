@@ -30,7 +30,7 @@ def show_inc_profile(user):
         name = inc_profile['name']
         admin = inc_profile['admin']
         employees = inc_profile['employees']
-        clients = inc_profile['clients']
+        clients = inc_profile['client_data']
         return flask.render_template('organization.html', name=name, admin=admin, employees=employees, clients=clients)
     else:
         return error("You don't have permit to access this section", 'home')
@@ -87,6 +87,14 @@ def save_user(user_file, user):
 def save_inc(inc_file, organization):
     with pathlib.Path(f'..\\data\\inc\\{organization}\\inc_profile.txt').open('w') as write:
         json.dump(inc_file, write)
+
+
+# load organization only with user
+def load_inc_with(user):
+    user_profile = load_user(user)
+    organization = user_profile['organization']
+    inc_profile = load_organization(organization)
+    return inc_profile
 
 
 # remove directory and contents
