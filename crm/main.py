@@ -27,9 +27,37 @@ def login():
     return app.send_static_file('login.html')
 
 
+# log in form into app
+# static/login.html
+@app.route('/log_in', methods=['POST'])
+def log_in_server():
+    user = flask.request.form.get('email')
+    if not pathlib.Path(f'..\\data\\user\\{user}').exists():
+        return general.error('No user with that email', 'sign_up')
+    else:
+        file = general.load_user(user)
+        if file['password'] == flask.request.form.get('password'):
+            flask.session['user'] = user
+            return profile.show_profile(user)
+        else:
+            return general.error('Incorrect password', 'login')
+
+
+# log out from session
+@app.route('/logout')
+def log_out():
+    flask.session.pop('user', None)
+    return flask.redirect(flask.url_for('index'))
+
+
 @app.route('/sign_up')
 def sign_up():
     return app.send_static_file('sign_up.html')
+
+
+@app.route('/sign_up_form', methods=['POST'])
+def sign_up_form():
+    return signup.sign_up_form()
 
 
 # load profile page
@@ -41,22 +69,25 @@ def go_to_profile():
         return general.error('You are not logged in', 'login')
 
 
+# change password
+@app.route('/new_password', methods=['POST'])
+def change_password():
+    return profile.change_password()
+
+
+# delete profile
+@app.route('/delete_profile', methods=['POST'])
+def delete_profile():
+    user = flask.session['user']
+    profile.remove(user)
+    return log_out()
+
+
 # add new customer
 @app.route('/new_customer')
 def access_to_client():
     if 'user' in flask.session:
         return flask.render_template('new_customer.html')
-    else:
-        return general.error('You are not logged in', 'login')
-
-
-# display current customers and their data
-@app.route('/customers', methods=['GET'])
-def show_customers():
-    if 'user' in flask.session:
-        user = flask.session['user']
-        customers = general.load_inc_with(user)['client_data']
-        return flask.render_template('customers.html', customers=customers)
     else:
         return general.error('You are not logged in', 'login')
 
@@ -79,6 +110,17 @@ def new_message():
     user = flask.session['user']
     messages.new_message(user)
     return access_to_messages()
+
+
+# display current customers and their data
+@app.route('/customers', methods=['GET'])
+def show_customers():
+    if 'user' in flask.session:
+        user = flask.session['user']
+        customers = general.load_inc_with(user)['client_data']
+        return flask.render_template('customers.html', customers=customers)
+    else:
+        return general.error('You are not logged in', 'login')
 
 
 # save client data
@@ -127,48 +169,6 @@ def delete_all_customers():
     inc_profile['client_data'].clear()
     general.save_inc(inc_profile, inc_profile['name'])
     return flask.render_template('customers.html')
-
-
-# log in form into app
-# static/login.html
-@app.route('/log_in', methods=['POST'])
-def log_in_server():
-    user = flask.request.form.get('email')
-    if not pathlib.Path(f'..\\data\\user\\{user}').exists():
-        return general.error('No user with that email', 'sign_up')
-    else:
-        file = general.load_user(user)
-        if file['password'] == flask.request.form.get('password'):
-            flask.session['user'] = user
-            return profile.show_profile(user)
-        else:
-            return general.error('Incorrect password', 'login')
-
-
-# log out from session
-@app.route('/logout')
-def log_out():
-    flask.session.pop('user', None)
-    return flask.redirect(flask.url_for('index'))
-
-
-@app.route('/sign_up_form', methods=['POST'])
-def sign_up_form():
-    return signup.sign_up_form()
-
-
-# change password
-@app.route('/new_password', methods=['POST'])
-def change_password():
-    return profile.change_password()
-
-
-# delete profile
-@app.route('/delete_profile', methods=['POST'])
-def delete_profile():
-    user = flask.session['user']
-    profile.remove(user)
-    return log_out()
 
 
 # load organization profile
