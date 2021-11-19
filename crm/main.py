@@ -5,6 +5,7 @@ import sys
 import secrets
 import flask
 import datetime
+import logging
 from flask import Flask
 from modules import general
 from modules import signup
@@ -81,6 +82,24 @@ def delete_profile():
     user = flask.session['user']
     profile.remove(user)
     return log_out()
+
+
+# edit profile redirect
+@app.route('/edit_profile', methods=['POST'])
+def edit_profile():
+    if 'user' in flask.session:
+        return profile.edit_profile_template(flask.session['user'])
+    else:
+        return general.error('You are not logged in', 'login')
+
+
+# submit data and save to profile file
+@app.route('/submit_data', methods=['POST'])
+def submit_data():
+    if 'cancel' in flask.request.form:
+        return go_to_profile()
+    elif 'submit' in flask.request.form:
+        return profile.submit_data()
 
 
 # add new customer
@@ -195,6 +214,10 @@ def show_inc_profile():
 secret_key = secrets.token_hex()
 app.secret_key = secret_key
 if __name__ == '__main__':
+    log_file = pathlib.Path('../tests/log.txt')
+    logging.basicConfig(filename=log_file, level=logging.DEBUG,
+                        format='%(levelname)s - %(message)s')
+    log_file.open('w')
     if sys.platform == 'darwin':  # different port if running on MacOsX
         app.run(debug=True, port=8080)
     else:

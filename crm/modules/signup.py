@@ -9,7 +9,7 @@ import json
 
 def sign_up_form():
     missing_field = []
-    fields = ['email', 'password', 'password_confirm']
+    fields = ['email', 'password', 'password_confirm', 'nickname']
 
     # check if all fields are complete -> form validation
     for field in fields:
@@ -21,8 +21,8 @@ def sign_up_form():
 
     # check if email is already registered
     new_user = flask.request.form.get('email')
-    organization = flask.request.form.get('organization')
-    if pathlib.Path(f'..\\..\\data\\user\\{new_user}').exists():
+    nickname = flask.request.form.get('nickname')
+    if pathlib.Path(f'..\\data\\user\\{new_user}').exists():
         return general.error('User already exits', 'sign_up')
 
     # check if email is valid
@@ -38,7 +38,7 @@ def sign_up_form():
             and any(character.isupper() for character in password)
             and any(character.isdigit() for character in password)
             and password == password_confirm):
-        create_new_user(organization, new_user, password)
+        create_new_user(nickname, new_user, password)
         flask.session['user'] = new_user
         return profile.show_profile(new_user)
     else:
@@ -46,28 +46,18 @@ def sign_up_form():
 
 
 # create user folder and json file with all data
-def create_new_user(organization, email, password):
-    # create organization and add user as admin
-    if organization != '' and not pathlib.Path(f'..\\data\\inc\\{organization}').exists():
-        pathlib.Path(f'..\\..\\data\\inc\\{organization}').mkdir(parents=True, exist_ok=True)
-        pathlib.Path(f'..\\..\\data\\inc\\{organization}\\customers').mkdir(exist_ok=True)
-        data_inc = {'name': organization,
-                    'admin': [],
-                    'employees': [],
-                    'clients': [],
-                    'client_data': {}}
-        with pathlib.Path(f'..\\..\\data\\inc\\{organization}\\inc_profile.txt').open('w') as w:
-            data_inc['admin'].append(email)
-            data_inc['employees'].append(email)
-            json.dump(data_inc, w)
-
+def create_new_user(nickname, email, password):
     # create user profile
-    pathlib.Path(f'..\\..\\data\\user\\{email}').mkdir(parents=True)
-    data_user = {'organization': organization,
-                 'user': email,
+    pathlib.Path(f'..\\data\\user\\{email}').mkdir(parents=True)
+    data_user = {'nickname': nickname,
+                 'email': email,
                  'password': password,
+                 'first_name': '',
+                 'last_name': '',
+                 'bio': '',
                  'messages': {},
-                 'contacts': [],
+                 'friends': [],
+                 'groups': {}
                  }
-    with pathlib.Path(f'..\\..\\data\\user\\{email}\\user_profile.txt').open('w') as write:
+    with pathlib.Path(f'..\\data\\user\\{email}\\user_profile.txt').open('w') as write:
         json.dump(data_user, write)

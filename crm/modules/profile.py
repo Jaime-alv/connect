@@ -1,19 +1,20 @@
 # Copyright (C) 2021 Jaime Alvarez Fernandez
 import pathlib
-import json
 import main
 from modules import general
 import flask
 
 
 # load profile user and send it to profile page
-def show_profile(user_email):
-    with pathlib.Path(f'..\\data\\user\\{user_email}\\user_profile.txt').open('r+') as file:
-        user_profile = json.load(file)
-        user = user_profile['user']
-        password = user_profile['password']
-        organization = user_profile['organization']
-    return flask.render_template('profile.html', user=user, password=password, organization=organization)
+def show_profile(user):
+    user_profile = general.load_user(user)
+    email = user_profile['email']
+    first_name = user_profile['first_name']
+    last_name = user_profile['last_name']
+    nickname = user_profile['nickname']
+    bio = user_profile['bio']
+    return flask.render_template('profile.html', email=email, first_name=first_name, last_name=last_name, bio=bio,
+                                 nickname=nickname)
 
 
 def change_password():
@@ -37,24 +38,31 @@ def change_password():
 
 # remove directory and contents
 def remove(user):
-    user_profile = general.load_user(user)
-    organization = user_profile['organization']
-    inc_profile = general.load_organization(organization)
-    if len(inc_profile['admin']) == 1:
-        remove_all(f'..\\data\\inc\\{organization}')
-        remove_all(f'..\\data\\user\\{user}')
-    else:
-        del inc_profile['employees'][user]
-        if user in inc_profile['admin']:
-            del inc_profile['admin'][user]
-        remove_all(f'..\\data\\user\\{user}')
-
-
-def remove_all(path):
-    path = pathlib.Path(path)
+    path = pathlib.Path(f'..\\data\\user\\{user}')
     for item in path.iterdir():
         if item.is_dir():
-            remove_all(item)
+            remove(item)
         else:
             item.unlink()
     path.rmdir()
+
+
+# print profile info for editing, just PRINT
+def edit_profile_template(user):
+    user_profile = general.load_user(user)
+    nickname = user_profile['nickname']
+    first_name = user_profile['first_name']
+    last_name = user_profile['last_name']
+    bio = user_profile['bio']
+    return flask.render_template('edit_profile.html', nickname=nickname, first_name=first_name, last_name=last_name,
+                                 bio=bio)
+
+
+def submit_data():
+    user_file = general.load_user(flask.session['user'])
+    user_file['nickname'] = flask.request.form.get('nickname')
+    user_file['first_name'] = flask.request.form.get('first_name')
+    user_file['last_name'] = flask.request.form.get('last_name')
+    user_file['bio'] = flask.request.form.get('bio')
+    general.save_user(user_file, flask.session['user'])
+    return show_profile(flask.session['user'])
