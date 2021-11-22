@@ -4,6 +4,8 @@
 # Work in Progress
 You can create the server and toy with it, but it's not ready and there is no encryption, yet, for data.
 
+![under construction](doc/under_construction.jpg)
+
 # Set up
 - Install python from https://www.python.org/ (_built under python 3.9_)
 - Download repository [web_check.git](https://github.com/Jaime-alv/crm)
@@ -20,5 +22,4 @@ You can create the server and toy with it, but it's not ready and there is no en
 
 # What it does
 
-Script creates a server where you can access all your clients' data, their phones, emails and telegram accounts and chat
-with them with messages.
+Chat with only those you know, either in groups or one to one. Create your own virtual and private social net.
