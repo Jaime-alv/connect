@@ -2,6 +2,7 @@
 import re
 import flask
 import pathlib
+import shutil
 from modules import general
 from modules import profile
 import json
@@ -49,9 +50,13 @@ def sign_up_form():
 def create_new_user(nickname, email, password):
     # create user profile
     pathlib.Path(f'..\\data\\user\\{email}').mkdir(parents=True)
+    pathlib.Path(f'..\\data\\user\\{email}\\img').mkdir()
+    vanilla_image = pathlib.Path('vanilla\\question.png')
+    shutil.copy(vanilla_image, f'..\\data\\user\\{email}\\img\\profile.png')
     data_user = {'nickname': nickname,
                  'email': email,
                  'password': password,
+                 'profile_picture': f'{email}\\img\\profile.png',
                  'first_name': '',
                  'last_name': '',
                  'bio': '',
@@ -61,3 +66,7 @@ def create_new_user(nickname, email, password):
                  }
     with pathlib.Path(f'..\\data\\user\\{email}\\user_profile.txt').open('w') as write:
         json.dump(data_user, write)
+    add_user = general.load_user_db()
+    add_user['users'].append(email)
+    general.save_user_db(add_user)
+

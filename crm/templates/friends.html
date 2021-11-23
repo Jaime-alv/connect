@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <link href="static/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="links">
+    <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a>
+</div>
+<table id="main" width="100%">
+    <tr>
+        <td>
+            Know associates:
+                <table border="1" width="100%">
+                    <tr>
+                        <td>Add new friend:</td>
+                        <td>
+                            <form name="add_new_friend" action="add_new_friend" method="post">
+                                <input type="text" name="friend_id" autocomplete="off">
+                                <input type="submit" value="Submit name">
+                            </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Friend list:</td>
+                        <td>
+                            <ul>
+                                {% for friend in friend_list %}
+                                <li><a href="{{ friend }}">{{ friend }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            <form name="delete_all_friends" action="delete_all_friends" method="post">
+                <input type="submit" value="Delete all">
+            </form>
+        </td>
+        <td id="aside" width="130" height="100">
+            <a href="friends">Friends</a><br>
+            <a href="groups">Groups</a><br>
+            <a href="messages">World</a>
+        </td>
+
+    </tr>
+</table>
+</body>
+</html>

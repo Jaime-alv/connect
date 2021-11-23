@@ -1,16 +1,17 @@
 # Copyright (C) 2021 Jaime Alvarez Fernandez
 # This file is in charge of routing and create server
+import json
 import pathlib
 import sys
 import secrets
 import flask
-import datetime
 import logging
 from flask import Flask
 from modules import general
 from modules import signup
 from modules import profile
 from modules import messages
+from modules import friends
 
 app = Flask(__name__)
 
@@ -39,6 +40,7 @@ def log_in_server():
         file = general.load_user(user)
         if file['password'] == flask.request.form.get('password'):
             flask.session['user'] = user
+            logging.debug(f"Logged with: {user}")
             return profile.show_profile(user)
         else:
             return general.error('Incorrect password', 'login')
@@ -102,15 +104,6 @@ def submit_data():
         return profile.submit_data()
 
 
-# add new customer
-@app.route('/new_customer')
-def access_to_client():
-    if 'user' in flask.session:
-        return flask.render_template('new_customer.html')
-    else:
-        return general.error('You are not logged in', 'login')
-
-
 # load messages' page
 @app.route('/messages', methods=['POST', 'GET'])
 def access_to_messages():
@@ -131,84 +124,36 @@ def new_message():
     return access_to_messages()
 
 
-# display current customers and their data
-@app.route('/customers', methods=['GET'])
-def show_customers():
+# add new customer
+@app.route('/new_customer')
+def access_to_client():
     if 'user' in flask.session:
-        user = flask.session['user']
-        customers = general.load_inc_with(user)['client_data']
-        return flask.render_template('customers.html', customers=customers)
+        return flask.render_template('new_customer.html')
+    else:
+        return general.error('You are not logged in', 'login')
+
+
+# display current friends
+@app.route('/friends', methods=['GET'])
+def show_friends():
+    if 'user' in flask.session:
+        return friends.load_friends(flask.session['user'])
     else:
         return general.error('You are not logged in', 'login')
 
 
 # save client data
 # template/new_customer.html
-@app.route('/new_client', methods=['POST'])
-def new_client():
-    user = flask.session['user']
-    inc_profile = general.load_inc_with(user)
-    missing_field = []
-    must_have_fields = ['first_name', 'email', 'last_name']
-
-    # form validation
-    for field in must_have_fields:
-        if flask.request.form.get(field) == '':
-            missing_field.append(field)
-    if missing_field:
-        return general.error(f'Missing inputs in {missing_field}', 'access_to_client')
-    if flask.request.form.get('email') in inc_profile['client_data']:
-        return general.error(f'Client already exits', 'access_to_client')
-
-    # get all fields and added to client's profile
-    email = flask.request.form.get('email')
-    inc_profile['client_data'].setdefault(email, {})
-    inc_profile['client_data'][email].setdefault('first_name', flask.request.form.get('first_name'))
-    inc_profile['client_data'][email].setdefault('last_name', flask.request.form.get('last_name'))
-    inc_profile['client_data'][email].setdefault('email', flask.request.form.get('email'))
-    inc_profile['client_data'][email].setdefault('phone', flask.request.form.get('phone'))
-    inc_profile['client_data'][email].setdefault('telegram', flask.request.form.get('telegram'))
-    inc_profile['client_data'][email].setdefault('organization', flask.request.form.get('organization'))
-    date_now = datetime.datetime.now()
-    file_name = date_now.strftime(f"{flask.request.form.get('first_name')[0].lower()}"
-                                  f"%f%Y%m%d"
-                                  f"{flask.request.form.get('last_name')[0].lower()}")
-    inc_profile['client_data'][email].setdefault('dialog_file', file_name)
-    general.save_inc(inc_profile, inc_profile['name'])
-    pathlib.Path(f'..\\data\\inc\\{inc_profile["name"]}\\customers\\{file_name}.txt').open('w')
-    return flask.render_template('new_customer.html')
+@app.route('/add_new_friend', methods=['POST'])
+def add_new_friend():
+    return friends.add_new_friend()
 
 
-# delete all customer list
-# template/customers.html
-@app.route('/delete_all_customers', methods=['POST'])
-def delete_all_customers():
-    user = flask.session['user']
-    inc_profile = general.load_inc_with(user)
-    inc_profile['client_data'].clear()
-    general.save_inc(inc_profile, inc_profile['name'])
-    return flask.render_template('customers.html')
-
-
-# load organization profile
-@app.route('/inc', methods=['GET'])
-def show_inc_profile():
-    if 'user' in flask.session:
-        user = flask.session['user']
-        user_profile = general.load_user(user)
-        organization = user_profile['organization']
-        inc_profile = general.load_organization(organization)
-        if user_profile['user'] in inc_profile['admin']:
-            name = inc_profile['name']
-            admin = inc_profile['admin']
-            employees = inc_profile['employees']
-            clients = inc_profile['client_data']
-            return flask.render_template('organization.html', name=name, admin=admin, employees=employees,
-                                         clients=clients)
-        else:
-            return general.error("You don't have permit to access this section", 'home')
-    else:
-        return general.error('You are not logged in', 'login')
+# delete all friends list
+# template/friends.html
+@app.route('/delete_all_friends', methods=['POST'])
+def delete_all_friends():
+    return friends.delete_all(flask.session['user'])
 
 
 secret_key = secrets.token_hex()
@@ -218,6 +163,10 @@ if __name__ == '__main__':
     logging.basicConfig(filename=log_file, level=logging.DEBUG,
                         format='%(levelname)s - %(message)s')
     log_file.open('w')
+    if not pathlib.Path('..\\data\\user\\user_db.txt').exists():
+        pathlib.Path('..\\data\\user').mkdir(exist_ok=True, parents=True)
+        with pathlib.Path('..\\data\\user\\user_db.txt').open('w') as write:
+            json.dump({'users': []}, write)
     if sys.platform == 'darwin':  # different port if running on MacOsX
         app.run(debug=True, port=8080)
     else:

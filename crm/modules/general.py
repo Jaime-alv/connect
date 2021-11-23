@@ -32,28 +32,20 @@ def load_user(user):
     return user_profile
 
 
-# load inc
-def load_organization(organization):
-    with pathlib.Path(f'..\\data\\inc\\{organization}\\inc_profile.txt').open('r') as write:
-        inc_profile = json.load(write)
-    return inc_profile
-
-
 # save user
 def save_user(user_file, user):
     with pathlib.Path(f'..\\data\\user\\{user}\\user_profile.txt').open('w') as write:
         json.dump(user_file, write)
 
 
-# save inc data
-def save_inc(inc_file, organization):
-    with pathlib.Path(f'..\\data\\inc\\{organization}\\inc_profile.txt').open('w') as write:
-        json.dump(inc_file, write)
+# load user database
+def load_user_db():
+    with pathlib.Path('..\\data\\user\\user_db.txt').open('r') as read:
+        user_db = json.load(read)
+    return user_db
 
 
-# load organization only with user
-def load_inc_with(user):
-    user_profile = load_user(user)
-    organization = user_profile['organization']
-    inc_profile = load_organization(organization)
-    return inc_profile
+# save user database
+def save_user_db(user_db):
+    with pathlib.Path('..\\data\\user\\user_db.txt').open('w') as write:
+        json.dump(user_db, write)

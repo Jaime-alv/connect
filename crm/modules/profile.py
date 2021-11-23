@@ -3,6 +3,7 @@ import pathlib
 import main
 from modules import general
 import flask
+import shutil
 
 
 # load profile user and send it to profile page
@@ -13,8 +14,9 @@ def show_profile(user):
     last_name = user_profile['last_name']
     nickname = user_profile['nickname']
     bio = user_profile['bio']
+    profile_picture = user_profile["profile_picture"]
     return flask.render_template('profile.html', email=email, first_name=first_name, last_name=last_name, bio=bio,
-                                 nickname=nickname)
+                                 nickname=nickname, profile_picture=profile_picture)
 
 
 def change_password():
@@ -39,12 +41,11 @@ def change_password():
 # remove directory and contents
 def remove(user):
     path = pathlib.Path(f'..\\data\\user\\{user}')
-    for item in path.iterdir():
-        if item.is_dir():
-            remove(item)
-        else:
-            item.unlink()
-    path.rmdir()
+    user_db = general.load_user_db()
+    user_db['users'].remove(user)
+    general.save_user_db(user_db)
+    shutil.rmtree(path, ignore_errors=True)
+    main.log_out()
 
 
 # print profile info for editing, just PRINT
