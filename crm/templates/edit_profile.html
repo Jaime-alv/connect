@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit {{ first_name }} profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <link href="static/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="links">
+    <a href="/">Home</a>|<a href="logout">Log out</a>|<a href="profile">My profile</a>
+</div>
+<table id="main" width="100%">
+    <tr>
+        <td>
+            <h3>Personal profile</h3>
+            <form name="submit_data" action="submit_data" method="post">
+                <table id="profile_table" border="1" cellspacing="5" cellpadding="5" width="500">
+                        <tr>
+                            <td width="120">Nickname:</td>
+                            <td>{{ nickname }}
+                            <p><input type="text" name="nickname" autocomplete="off" maxlength="50"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>First name:</td>
+                            <td>{{ first_name }}
+                            <p><input type="text" name="first_name" autocomplete="off" maxlength="50" ></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Last name:</td>
+                            <td>{{ last_name }}
+                            <p><input type="text" name="last_name" autocomplete="off" maxlength="50"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Public info:</td>
+                            <td>{{ bio }}
+                            <p><input type="text" name="bio" autocomplete="off" maxlength="50"></p>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td valign="top">
+                            New password:
+                            <p>Repeat password:</p>
+                        </td>
+                        <td>
+                            <form name="new_password" action="new_password" method="post">
+                                <input type="password" name="new_password">
+                                <p><input type="password" name="confirm_new_password"></p>
+                                <p><input type="submit" name="submit" value="Submit new password" align="center"></p>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2">
+                            <input type="submit" name="submit" value="Save">
+                            <input type="reset" value="Reset">
+                            <input type="submit" name="cancel" value="Discard">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </td>
+        <td id="aside" width="130" height="100">
+            <a href="friends">Friends</a><br>
+            <a href="groups">Groups</a><br>
+            <a href="messages">World</a>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

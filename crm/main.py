@@ -1,13 +1,17 @@
 # Copyright (C) 2021 Jaime Alvarez Fernandez
 # This file is in charge of routing and create server
+import json
 import pathlib
 import sys
 import secrets
 import flask
-import re
-import functions
-import datetime
+import logging
 from flask import Flask
+from modules import general
+from modules import signup
+from modules import profile
+from modules import messages
+from modules import friends
 
 app = Flask(__name__)
 
@@ -25,122 +29,21 @@ def login():
     return app.send_static_file('login.html')
 
 
-@app.route('/sign_up')
-def sign_up():
-    return app.send_static_file('sign_up.html')
-
-
-# load profile page
-@app.route('/profile')
-def go_to_profile():
-    if 'user' in flask.session:
-        return functions.show_profile(flask.session['user'])
-    else:
-        return functions.error('You are not logged in', 'login')
-
-
-# add new customer
-@app.route('/new_customer')
-def access_to_client():
-    if 'user' in flask.session:
-        return flask.render_template('new_customer.html')
-    else:
-        return functions.error('You are not logged in', 'login')
-
-
-# display current customers and their data
-@app.route('/customers', methods=['GET'])
-def show_customers():
-    if 'user' in flask.session:
-        user = flask.session['user']
-        customers = functions.load_inc_with(user)['client_data']
-        return flask.render_template('customers.html', customers=customers)
-    else:
-        return functions.error('You are not logged in', 'login')
-
-
-# load messages' page
-@app.route('/messages', methods=['POST', 'GET'])
-def access_to_messages():
-    if 'user' in flask.session:
-        user = flask.session['user']
-        user_profile = functions.load_user(user)
-        messages = user_profile['messages']
-        return flask.render_template('messages.html', messages=messages)
-    else:
-        return functions.error('You are not logged in', 'login')
-
-
-# process and save message
-@app.route('/new_message', methods=['POST'])
-def new_message():
-    user = flask.session['user']
-    functions.new_message(user)
-    return access_to_messages()
-
-
-# save client data
-# template/new_customer.html
-@app.route('/new_client', methods=['POST'])
-def new_client():
-    user = flask.session['user']
-    inc_profile = functions.load_inc_with(user)
-    missing_field = []
-    must_have_fields = ['first_name', 'email', 'last_name']
-
-    # form validation
-    for field in must_have_fields:
-        if flask.request.form.get(field) == '':
-            missing_field.append(field)
-    if missing_field:
-        return functions.error(f'Missing inputs in {missing_field}', 'access_to_client')
-    if flask.request.form.get('email') in inc_profile['client_data']:
-        return functions.error(f'Client already exits', 'access_to_client')
-
-    # get all fields and added to client's profile
-    email = flask.request.form.get('email')
-    inc_profile['client_data'].setdefault(email, {})
-    inc_profile['client_data'][email].setdefault('first_name', flask.request.form.get('first_name'))
-    inc_profile['client_data'][email].setdefault('last_name', flask.request.form.get('last_name'))
-    inc_profile['client_data'][email].setdefault('email', flask.request.form.get('email'))
-    inc_profile['client_data'][email].setdefault('phone', flask.request.form.get('phone'))
-    inc_profile['client_data'][email].setdefault('telegram', flask.request.form.get('telegram'))
-    inc_profile['client_data'][email].setdefault('organization', flask.request.form.get('organization'))
-    date_now = datetime.datetime.now()
-    file_name = date_now.strftime(f"{flask.request.form.get('first_name')[0].lower()}"
-                                  f"%f%Y%m%d"
-                                  f"{flask.request.form.get('last_name')[0].lower()}")
-    inc_profile['client_data'][email].setdefault('dialog_file', file_name)
-    functions.save_inc(inc_profile, inc_profile['name'])
-    pathlib.Path(f'..\\data\\inc\\{inc_profile["name"]}\\customers\\{file_name}.txt').open('w')
-    return flask.render_template('new_customer.html')
-
-
-# delete all customer list
-# template/customers.html
-@app.route('/delete_all_customers', methods=['POST'])
-def delete_all_customers():
-    user = flask.session['user']
-    inc_profile = functions.load_inc_with(user)
-    inc_profile['client_data'].clear()
-    functions.save_inc(inc_profile, inc_profile['name'])
-    return flask.render_template('customers.html')
-
-
 # log in form into app
 # static/login.html
 @app.route('/log_in', methods=['POST'])
 def log_in_server():
     user = flask.request.form.get('email')
     if not pathlib.Path(f'..\\data\\user\\{user}').exists():
-        return functions.error('No user with that email', 'sign_up')
+        return general.error('No user with that email', 'sign_up')
     else:
-        file = functions.load_user(user)
+        file = general.load_user(user)
         if file['password'] == flask.request.form.get('password'):
             flask.session['user'] = user
-            return functions.show_profile(user)
+            logging.debug(f"Logged with: {user}")
+            return profile.show_profile(user)
         else:
-            return functions.error('Incorrect password', 'login')
+            return general.error('Incorrect password', 'login')
 
 
 # log out from session
@@ -150,98 +53,120 @@ def log_out():
     return flask.redirect(flask.url_for('index'))
 
 
+@app.route('/sign_up')
+def sign_up():
+    return app.send_static_file('sign_up.html')
+
+
 @app.route('/sign_up_form', methods=['POST'])
 def sign_up_form():
-    missing_field = []
-    fields = ['email', 'password', 'password_confirm']
+    return signup.sign_up_form()
 
-    # check if all fields are complete -> form validation
-    for field in fields:
-        value = flask.request.form.get(field)
-        if value == '':
-            missing_field.append(field)
-    if missing_field:
-        return functions.error(f'Missing inputs in {missing_field}', 'sign_up')
 
-    # check if email is already registered
-    new_user = flask.request.form.get('email')
-    organization = flask.request.form.get('organization')
-    if pathlib.Path(f'..\\data\\user\\{new_user}').exists():
-        return functions.error('User already exits', 'sign_up')
-
-    # check if email is valid
-    email_regex = re.compile(r"[a-zA-Z0-9_.]+@[a-zA-Z0-9_.+]+")
-    email = email_regex.search(new_user)
-    if email is None:
-        return functions.error('email is not valid', 'sign_up')
-
-    # check if password is valid
-    password = flask.request.form.get('password')
-    password_confirm = flask.request.form.get('password_confirm')
-    if (any(character.islower() for character in password)
-            and any(character.isupper() for character in password)
-            and any(character.isdigit() for character in password)
-            and password == password_confirm):
-        functions.create_new_user(organization, new_user, password)
-        flask.session['user'] = new_user
-        return functions.show_profile(new_user)
+# load profile page
+@app.route('/profile')
+def go_to_profile():
+    if 'user' in flask.session:
+        return profile.show_profile(flask.session['user'])
     else:
-        return functions.error('Password needs at least 1 upper, 1 digit and 1 punctuation', 'index')
+        return general.error('You are not logged in', 'login')
 
 
 # change password
 @app.route('/new_password', methods=['POST'])
 def change_password():
-    user = flask.session['user']
-    new_password = flask.request.form.get('new_password')
-    confirm_new_password = flask.request.form.get('confirm_new_password')
-    user_file = functions.load_user(user)
-
-    if new_password == user_file['password']:
-        return functions.error('Password already used, choose new password', 'go_to_profile')
-    elif new_password != user_file['password'] and (any(character.islower() for character in new_password)
-                                                    and any(character.isupper() for character in new_password)
-                                                    and any(character.isdigit() for character in new_password)
-                                                    and new_password == confirm_new_password):
-        user_file['password'] = new_password
-        functions.save_user(user_file, user)
-        return go_to_profile()
-    elif new_password != confirm_new_password:
-        return functions.error('Both password fields needs to be equal', 'go_to_profile')
+    return profile.change_password()
 
 
 # delete profile
 @app.route('/delete_profile', methods=['POST'])
 def delete_profile():
     user = flask.session['user']
-    functions.remove(user)
+    profile.remove(user)
     return log_out()
 
 
-# load organization profile
-@app.route('/inc', methods=['GET'])
-def show_inc_profile():
+# edit profile redirect
+@app.route('/edit_profile', methods=['POST'])
+def edit_profile():
+    if 'user' in flask.session:
+        return profile.edit_profile_template(flask.session['user'])
+    else:
+        return general.error('You are not logged in', 'login')
+
+
+# submit data and save to profile file
+@app.route('/submit_data', methods=['POST'])
+def submit_data():
+    if 'cancel' in flask.request.form:
+        return go_to_profile()
+    elif 'submit' in flask.request.form:
+        return profile.submit_data()
+
+
+# load messages' page
+@app.route('/messages', methods=['POST', 'GET'])
+def access_to_messages():
     if 'user' in flask.session:
         user = flask.session['user']
-        user_profile = functions.load_user(user)
-        organization = user_profile['organization']
-        inc_profile = functions.load_organization(organization)
-        if user_profile['user'] in inc_profile['admin']:
-            name = inc_profile['name']
-            admin = inc_profile['admin']
-            employees = inc_profile['employees']
-            clients = inc_profile['client_data']
-            return flask.render_template('organization.html', name=name, admin=admin, employees=employees,
-                                         clients=clients)
-        else:
-            return functions.error("You don't have permit to access this section", 'home')
+        user_profile = general.load_user(user)
+        user_messages = user_profile['messages']
+        return flask.render_template('messages.html', messages=user_messages)
     else:
-        return functions.error('You are not logged in', 'login')
+        return general.error('You are not logged in', 'login')
+
+
+# process and save message
+@app.route('/new_message', methods=['POST'])
+def new_message():
+    user = flask.session['user']
+    messages.new_message(user)
+    return access_to_messages()
+
+
+# add new customer
+@app.route('/new_customer')
+def access_to_client():
+    if 'user' in flask.session:
+        return flask.render_template('new_customer.html')
+    else:
+        return general.error('You are not logged in', 'login')
+
+
+# display current friends
+@app.route('/friends', methods=['GET'])
+def show_friends():
+    if 'user' in flask.session:
+        return friends.load_friends(flask.session['user'])
+    else:
+        return general.error('You are not logged in', 'login')
+
+
+# save client data
+# template/new_customer.html
+@app.route('/add_new_friend', methods=['POST'])
+def add_new_friend():
+    return friends.add_new_friend()
+
+
+# delete all friends list
+# template/friends.html
+@app.route('/delete_all_friends', methods=['POST'])
+def delete_all_friends():
+    return friends.delete_all(flask.session['user'])
 
 
 secret_key = secrets.token_hex()
 app.secret_key = secret_key
 if __name__ == '__main__':
+    log_file = pathlib.Path('../tests/log.txt')
+    logging.basicConfig(filename=log_file, level=logging.DEBUG,
+                        format='%(levelname)s - %(message)s')
+    log_file.open('w')
+    if not pathlib.Path('..\\data\\user\\user_db.txt').exists():
+        pathlib.Path('..\\data\\user').mkdir(exist_ok=True, parents=True)
+        with pathlib.Path('..\\data\\user\\user_db.txt').open('w') as write:
+            json.dump({'users': []}, write)
     if sys.platform == 'darwin':  # different port if running on MacOsX
         app.run(debug=True, port=8080)
     else:
