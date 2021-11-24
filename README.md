@@ -1,5 +1,5 @@
-# CRM
- Customer Relationship Manager
+# Connect
+Your own social net.
 
 # Work in Progress
 You can create the server and toy with it, but it's not ready and there is no encryption, yet, for data.
