@@ -1,0 +1,41 @@
+{% extends "welcome.html" %}
+
+{% block content %}
+    <div id="login">
+        <h1>Sign In</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.username.label }}:<br>
+                {{ form.username(size=32) }}
+                {% for error in form.username.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.user_email.label }}:<br>
+                {{ form.user_email(size=32) }}
+                {% for error in form.user_email.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(size=32, autocomplete=off) }}
+                {% for error in form.password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.repeat_password.label }}<br>
+                {{ form.repeat_password(size=32, autocomplete=off) }}
+                {% for error in form.repeat_password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.submit() }}
+            </p>
+        </form>
+    </div>
+{% endblock %}
