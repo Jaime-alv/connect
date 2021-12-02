@@ -1,0 +1,28 @@
+{% extends "general_template.html" %}
+
+{% block content %}
+<div>
+    <table>
+        <tr>
+            <td>Username: </td>
+            <td>{{ user.username }}</td>
+        </tr>
+        <tr>
+            <td>Email: </td>
+            <td>{{ user.email }}</td>
+        </tr>
+        <tr>
+            <td>Friends</td>
+            <td>
+                {% for friend in user.friends %}
+                <ul>
+                    <li>
+                        {{ friend }}
+                    </li>
+                </ul>
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
