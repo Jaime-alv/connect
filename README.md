@@ -8,7 +8,7 @@ You can create the server and toy with it, but it's not ready and there is no en
 
 # Set up
 - Install python from https://www.python.org/ (_built under python 3.9_)
-- Download repository [web_check.git](https://github.com/Jaime-alv/crm)
+- Download repository [connect.git](https://github.com/Jaime-alv/connect)
 
 - Create a new virtual environment following the instructions in https://docs.python.org/3/library/venv.html
 
