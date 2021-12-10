@@ -1,6 +1,6 @@
-Flask~=2.0.2
-WTForms~=3.0.0
-Flask-wtf~=1.0.0
-Flask-SQLAlchemy~=2.5.1
-Flask-Migrate~=3.1.0
-Flask-Login~=0.5.0
+flask~=2.0.2
+wtforms~=3.0.0
+flask-wtf~=1.0.0
+flask-sqlalchemy~=2.5.1
+flask-migrate~=3.1.0
+flask-login~=0.5.0
