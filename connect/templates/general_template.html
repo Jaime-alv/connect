@@ -5,7 +5,6 @@
     <meta name="description" content="Your own private social net" />
     <meta name="viewport" content="width=device-width, initial-scale=1" >
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" />
-    <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
     {% if title %}
     <title>{{ title }}</title>
     {% else %}
@@ -14,19 +13,24 @@
 </head>
 <body>
 <div id="links">
-    <a href="{{ url_for('index') }}">Home</a>|<a href="{{ url_for('logout') }}">Log out</a>|<a href="{{ url_for('profile') }}">My profile</a>
+    <a href="{{ url_for('index') }}">Home</a> |
+    {% if current_user.is_anonymous %}
+    <a href="{{ url_for('login') }}">Login</a> |
+    <a href="{{ url_for('sign_in') }}">Register</a>
+    {% else %}
+    <a href="{{ url_for('logout') }}">Logout</a> |
+    <a href="{{ url_for('profile') }}">Profile</a>
+    {% endif %}
 </div>
-<table id="main" width="100%">
-    <tr>
-        <td>
-            {% block content %}{% endblock %}
-        </td>
-        <td id="aside" width="130" height="100">
-            <a href="friends">Friends</a><br>
-            <a href="groups">Groups</a><br>
-            <a href="messages">World</a>
-        </td>
-    </tr>
-</table>
+
+{% block content %}{% endblock %}
+
+{% if current_user.is_authenticated %}
+<div id="aside">
+    {% include '_links.html' %}
+</div>
+{% else %}
+{% endif %}
+
 </body>
 </html>

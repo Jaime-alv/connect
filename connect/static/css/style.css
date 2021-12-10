@@ -8,12 +8,14 @@ color: #e1e6eb
 }
 
 #aside{
+margin: 50px 0px 0px 90%;
 align: right;
-text-align: left;
+font-size: 120%;
+text-align: center;
 border: 2px solid #e3a144;
 border-radius: 4px;
 background: #86b5db;
-padding: 10px;
+padding: 50px 0px 50px 0px;
 }
 
 #profile_table{

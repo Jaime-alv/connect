@@ -1,28 +1,57 @@
 {% extends "general_template.html" %}
 
 {% block content %}
-<div>
-    <table>
-        <tr>
-            <td>Username: </td>
-            <td>{{ user.username }}</td>
-        </tr>
-        <tr>
-            <td>Email: </td>
-            <td>{{ user.email }}</td>
-        </tr>
-        <tr>
-            <td>Friends</td>
-            <td>
-                {% for friend in user.friends %}
-                <ul>
-                    <li>
-                        {{ friend }}
-                    </li>
-                </ul>
-                {% endfor %}
-            </td>
-        </tr>
-    </table>
-</div>
+    <div id="profile">
+        <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+            <table cellspacing="0" cellpadding="5" border="1">
+                <tr>
+                    <td>Nickname:</td>
+                    <td>{{ user.username }}</td>
+                </tr>
+                <tr>
+                    <td>Avatar:</td>
+                    <td><img src="{{ user.avatar(80) }}"></td>
+                </tr>
+                <tr>
+                    <td>{{ form.user_email.label }}:</td>
+                    <td>
+                        <p>
+                            {{ user.email }}
+                        </p>
+                        <p>
+                            Modify email:<br>
+                            {{ form.user_email(size=32, autocomplete=off) }}
+                            {% for error in form.user_email.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top">{{ form.about_me.label }}:</td>
+                    <td>
+                        {{ form.about_me(cols=50, rows=4) }}<br>
+                        {% for error in form.about_me.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td>Change password:</td>
+                    <td>
+                         <a href="{{url_for('change_password')}}">Edit password</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Last time online:</td>
+                    <td>{% if user.last_seen %}{{ user.last_seen }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>{{ form.submit() }}</td>
+                </tr>
+            </table>
+        </form>
+    </div>
 {% endblock %}
