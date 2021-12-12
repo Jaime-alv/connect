@@ -12,7 +12,8 @@
     {% endif %}
 </head>
 <body>
-<div id="links">
+<header>
+    <nav>
     <a href="{{ url_for('index') }}">Home</a> |
     {% if current_user.is_anonymous %}
     <a href="{{ url_for('login') }}">Login</a> |
@@ -21,16 +22,36 @@
     <a href="{{ url_for('logout') }}">Logout</a> |
     <a href="{{ url_for('profile') }}">Profile</a>
     {% endif %}
+    </nav>
+</header>
+<div id="main_table">
+    <table border="0" width="100%">
+        <tr>
+            <td width="10%" valign="top">
+                {% if current_user.is_authenticated %}
+                <div id="left_side">
+                    {% include '_profile.html' %}
+                </div>
+                {% else %}
+                {% endif %}
+            </td>
+            <td width="80%" align="center">
+                {% block content %}{% endblock %}
+            </td>
+            <td width="10%" valign="top">
+                {% if current_user.is_authenticated %}
+                <div id="right_side">
+                    {% include '_links.html' %}
+                </div>
+                {% else %}
+                {% endif %}
+            </td>
+        </tr>
+    </table>
 </div>
-
-{% block content %}{% endblock %}
-
-{% if current_user.is_authenticated %}
-<div id="aside">
-    {% include '_links.html' %}
-</div>
-{% else %}
-{% endif %}
-
+<footer>
+    Copyright (C) 2021 Jaime Alvarez Fernandez<br>
+    <a href="https://github.com/Jaime-alv">GitHub</a>
+</footer>
 </body>
 </html>
