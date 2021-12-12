@@ -2,6 +2,7 @@
 tests/
 .idea/
 venv/
+connect_old/
 
 #content in data/
 data/*
