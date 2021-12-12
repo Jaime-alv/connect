@@ -1,3 +1,5 @@
+# Copyright (C) 2021 Jaime Alvarez Fernandez
+
 import flask_login
 import wtforms
 from flask_wtf import FlaskForm
@@ -44,11 +46,17 @@ class EditProfileForm(FlaskForm):
                                                                             message='Please enter a valid email')])
     about_me = wtforms.TextAreaField('About me', validators=[validators.Length(min=0, max=140)])
     submit = wtforms.SubmitField('Save changes')
+    location = wtforms.StringField('Location', validators=[validators.Optional()])
+    website = wtforms.StringField('Website', validators=[validators.Optional()])
 
     def validate_user_email(self, user_email):
         user = models.User.query.filter_by(email=user_email.data).first()
         if user is not None:
             raise validators.ValidationError('Please use a different email address.')
+
+    def validate_website(self, website):
+        if not website.data.startswith(r'http'):
+            raise validators.ValidationError('Url needs to start with http')
 
 
 class ChangePasswordForm(FlaskForm):

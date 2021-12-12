@@ -1,14 +1,34 @@
 body{
 font-family: Verdana;
 background: #4b5a66;
-color: #e1e6eb
+color: #e1e6eb;
+min-height: 100vh;
+margin: 0;
 }
 
-#main{
+footer{
+  min-height:20px;
+  background:PapayaWhip;
+  color: black;
+  font-size:90%;
+  text-align:center;
+  padding:10px;
+  background: #86b5db;
 }
 
-#aside{
-margin: 50px 0px 0px 90%;
+header {
+text-align:right;
+font-size: 120%;
+background: #86b5db;
+padding:10px;
+}
+
+#main_table{
+margin: 50px 10% 0px 10%;
+}
+
+#right_side{
+margin: 0px 0px 0px 0%;
 align: right;
 font-size: 120%;
 text-align: center;
@@ -18,18 +38,17 @@ background: #86b5db;
 padding: 50px 0px 50px 0px;
 }
 
+#left_side{
+border: 2px solid #e3a144;
+text-align: center;
+border-radius: 4px;
+background: #86b5db;
+color: black;
+}
+
 #profile_table{
 text-align: center;
 border: 1px solid #e3a144
-}
-
-#links {
-text-align:right;
-font-size: 120%;
-border: 2px solid #e3a144;
-border-radius: 4px;
-background: #86b5db;
-padding:10px;
 }
 
 #signup_css {
@@ -37,4 +56,13 @@ text-align: left;
 line-height: 1em;
 padding: 10px;
 margin: 10px;
+}
+/* Trick to get footer down */
+body{
+  display:flex;
+  flex-direction:column;
+}
+
+footer{
+  margin-top:auto;
 }

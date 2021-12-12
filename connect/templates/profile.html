@@ -37,6 +37,20 @@
                         {% endfor %}
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        {{ form.location.label }}:
+                    </td>
+                    <td>
+                        {{ form.location(size=32) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {{ form.website.label }}:
+                    </td>
+                    <td>{{ form.website(size=32) }}</a></td>
+                </tr>
                 <tr valign="top">
                     <td>Change password:</td>
                     <td>

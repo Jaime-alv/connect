@@ -1,0 +1,26 @@
+<p>
+    <img src="{{ current_user.avatar(128) }}">
+</p>
+
+<p>
+    {{ current_user.username }}
+</p>
+
+<p>
+    {% if current_user.about_me is not none %}
+    {{ current_user.about_me }}
+    {% elif current_user.about_me == '' %}
+    {% endif %}
+</p>
+<p>
+    {% if current_user.location is not none %}
+    {{ current_user.location }}
+    {% elif current_user.location == '' %}
+    {% endif %}
+</p>
+<p>
+    {% if current_user.website is not none %}
+    <a href="{{ current_user.website }}">{{ current_user.website }}</a>
+    {% elif current_user.website == '' %}
+    {% endif %}
+</p>

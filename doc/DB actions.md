@@ -45,8 +45,8 @@
 ### Clear database through python console
 
 ```
-from app import db
-from app.models import User
+from connect import db
+from connect.models import User
 
 users = User.query.all()
 

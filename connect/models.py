@@ -1,3 +1,5 @@
+# Copyright (C) 2021 Jaime Alvarez Fernandez
+
 from connect import db, login
 import datetime
 import werkzeug.security
@@ -11,6 +13,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(128))
     about_me = db.Column(db.String(140))
+    location = db.Column(db.String(64))
+    website = db.Column(db.String(120))
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):

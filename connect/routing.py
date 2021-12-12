@@ -1,3 +1,5 @@
+# Copyright (C) 2021 Jaime Alvarez Fernandez
+
 import flask
 import flask_login
 from werkzeug import urls
@@ -38,12 +40,16 @@ def profile():
         if form.user_email.data != '':
             flask_login.current_user.email = form.user_email.data
         flask_login.current_user.about_me = form.about_me.data
+        flask_login.current_user.location = form.location.data
+        flask_login.current_user.website = form.website.data
         db.session.commit()
         flask.flash('Your changes have been saved.')
         return flask.redirect(flask.url_for('profile'))
     elif flask.request.method == 'GET':
         form.user_email.data = ''
         form.about_me.data = flask_login.current_user.about_me
+        form.website.data = flask_login.current_user.website
+        form.location.data = flask_login.current_user.location
     return flask.render_template('profile.html', user=flask_login.current_user, form=form, title='Profile')
 
 
@@ -53,7 +59,8 @@ def sign_in():
         return flask.redirect(flask.url_for('index'))
     form = forms.RegisterForm()
     if form.validate_on_submit():
-        user = models.User(username=form.username.data, email=form.user_email.data)
+        user = models.User(username=form.username.data,
+                           email=form.user_email.data)
         user.hash_password(form.password.data)
         db.session.add(user)
         db.session.commit()

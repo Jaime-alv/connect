@@ -1,3 +1,5 @@
+# Copyright (C) 2021 Jaime Alvarez Fernandez
+
 from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
