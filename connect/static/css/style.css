@@ -57,6 +57,19 @@ line-height: 1em;
 padding: 10px;
 margin: 10px;
 }
+
+.justify_text {
+text-align: justify;
+text-justify: inter-word;
+}
+
+.underline {
+text-decoration: underline;
+}
+
+.bold {
+font-weight: bold;
+}
 /* Trick to get footer down */
 body{
   display:flex;
