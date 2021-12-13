@@ -54,6 +54,11 @@ class Friends(db.Model):
     friend_id = db.Column(db.String(64), index=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    def avatar(self, size):
+        user = User.query.filter_by(username=self.friend_id).first()
+        digest = md5(user.email.encode('utf-8')).hexdigest()
+        return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+
     def __repr__(self):
         return f'<Friend {self.friend_id}>'
 

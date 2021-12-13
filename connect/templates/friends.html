@@ -17,16 +17,16 @@
         {% for error in form.friend_id.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
-        {{ form.submit() }}
     </form>
 </div>
 <div>
-    <ul>
+    <table>
         {% for friend in friends %}
-        <li class="justify_text">
-            <a href="{{ url_for('user_messages', username=friend.friend_id) }}">{{ friend.friend_id }}</a>
-        </li>
+            <tr>
+                <td><img src="{{ friend.avatar(36) }}"></td>
+                <td><a href="{{ url_for('user_messages', username=friend.friend_id) }}">{{ friend.friend_id }}</a></td>
+            </tr>
         {% endfor %}
-    </ul>
+    </table>
 </div>
 {% endblock %}
