@@ -1,7 +1,16 @@
 {% extends "general_template.html" %}
 
 {% block content %}
-    <div id="profile">
+    <!--
+  ~ connect. Build your own private social net
+  ~ Copyright (C) 2021 Jaime Alvarez Fernandez
+  ~ Contact info: jaime.af.git@gmail.com
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<div id="profile">
         <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
             <table cellspacing="0" cellpadding="5" border="1">
@@ -21,7 +30,7 @@
                         </p>
                         <p>
                             Modify email:<br>
-                            {{ form.user_email(size=32, autocomplete=off) }}
+                            {{ form.user_email(size=32, autocomplete=off) }}<br>
                             {% for error in form.user_email.errors %}
                             <span style="color: red;">[{{ error }}]</span>
                             {% endfor %}
@@ -42,14 +51,22 @@
                         {{ form.location.label }}:
                     </td>
                     <td>
-                        {{ form.location(size=32) }}
+                        {{ form.location(size=32) }}<br>
+                        {% for error in form.location.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
                     </td>
                 </tr>
                 <tr>
                     <td>
                         {{ form.website.label }}:
                     </td>
-                    <td>{{ form.website(size=32) }}</a></td>
+                    <td>
+                        {{ form.website(size=32) }}<br>
+                        {% for error in form.website.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </td>
                 </tr>
                 <tr valign="top">
                     <td>Change password:</td>

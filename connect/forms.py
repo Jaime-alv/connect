@@ -1,4 +1,9 @@
-# Copyright (C) 2021 Jaime Alvarez Fernandez
+#  connect. Build your own private social net
+#  Copyright (C) 2021 Jaime Alvarez Fernandez
+#  Contact info: jaime.af.git@gmail.com
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import flask_login
 import wtforms

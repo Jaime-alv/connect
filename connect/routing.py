@@ -1,4 +1,20 @@
-# Copyright (C) 2021 Jaime Alvarez Fernandez
+#  connect. Build your own private social net
+#  Copyright (C) 2021 Jaime Alvarez Fernandez
+#  Contact info: jaime.af.git@gmail.com
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 
 import flask
 import flask_login
@@ -11,7 +27,19 @@ from connect import models, forms
 @app.route('/')
 @app.route('/index')
 def index():
+    if flask_login.current_user.is_authenticated:
+        return flask.redirect(flask.url_for('user_messages', username=flask_login.current_user.username))
     return flask.render_template('index.html', title='Home page')
+
+
+@app.route('/user/<username>')
+@flask_login.login_required
+def user_messages(username):
+    user = models.User.query.filter_by(username=username).first_or_404()
+    posts = [{'author': user, 'body': 'Test post #1'},
+             {'author': user, 'body': 'Test post #2'}
+             ]
+    return flask.render_template('user.html', user=user, posts=posts, title=user.username)
 
 
 @app.route('/login', methods=['GET', 'POST'])
