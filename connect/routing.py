@@ -123,3 +123,20 @@ def change_password():
         flask.flash('Your new password have been saved.')
         return flask.redirect(flask.url_for('profile'))
     return flask.render_template('change_password.html', title='Change password', form=formulary)
+
+
+@app.route('/friends', methods=['GET', 'POST'])
+@flask_login.login_required
+def friends():
+    form = forms.AddFriend()
+    if form.validate_on_submit():
+        friend = models.User.query.filter_by(username=form.friend_id.data).first()
+        f = models.Friends(friend_id=friend.username, anchor=flask_login.current_user)
+        db.session.add(f)
+        db.session.commit()
+    all_friends = models.Friends.query.all()
+    return flask.render_template('friends.html', friends=all_friends, title='Friends', form=form)
+
+
+
+

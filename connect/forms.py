@@ -84,3 +84,14 @@ class ChangePasswordForm(FlaskForm):
         if old_password.data == self.new_password.data:
             raise validators.ValidationError("New password can't be equal to old password")
 
+
+class AddFriend(FlaskForm):
+    friend_id = wtforms.StringField('Add friend', validators=[validators.DataRequired()])
+    submit = wtforms.SubmitField('Submit')
+
+    def validate_friend_id(self, friend_id):
+        friend_id = models.User.query.filter_by(username=friend_id.data).first()
+        if friend_id is None:
+            raise validators.ValidationError("No user with that id.")
+        if friend_id == flask_login.current_user:
+            raise validators.ValidationError("Add a different user.")
