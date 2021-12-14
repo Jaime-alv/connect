@@ -1,0 +1,17 @@
+<!--
+  ~ connect. Build your own private social net
+  ~ Copyright (C) 2021 Jaime Alvarez Fernandez
+  ~ Contact info: jaime.af.git@gmail.com
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+{% extends "general_template.html" %}
+
+{% block content %}
+    <h1>An unexpected error has occurred</h1>
+    <img src="{{ url_for('static', filename='img/error.jpg') }}" width="450" height="300">
+    <p>The administrator has been notified. Sorry for the inconvenience!</p>
+    <p><a href="{{ url_for('index') }}">Back</a></p>
+{% endblock %}

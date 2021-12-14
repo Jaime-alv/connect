@@ -32,14 +32,17 @@ def index():
     return flask.render_template('index.html', title='Home page')
 
 
-@app.route('/user/<username>')
+@app.route('/user/<username>', methods=['GET', 'POST'])
 @flask_login.login_required
 def user_messages(username):
     user = models.User.query.filter_by(username=username).first_or_404()
-    posts = [{'author': user, 'body': 'Test post #1'},
-             {'author': user, 'body': 'Test post #2'}
-             ]
-    return flask.render_template('user.html', user=user, posts=posts, title=user.username)
+    form = forms.WriteMessage()
+    if form.validate_on_submit():
+        post = models.Posts(body=form.message.data, author=flask_login.current_user)
+        db.session.add(post)
+        db.session.commit()
+    posts = models.Posts.query.filter_by(user_id=user.id).all()
+    return flask.render_template('user.html', user=user, posts=posts, title=user.username, form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -92,6 +95,7 @@ def sign_in():
         user.hash_password(form.password.data)
         db.session.add(user)
         db.session.commit()
+        app.logger.info('New user registered')
         flask.flash('Congratulations, you are now a registered user!')
         return flask.redirect(flask.url_for('index'))
     return flask.render_template('sign_in.html', form=form, title='Register')
@@ -123,3 +127,20 @@ def change_password():
         flask.flash('Your new password have been saved.')
         return flask.redirect(flask.url_for('profile'))
     return flask.render_template('change_password.html', title='Change password', form=formulary)
+
+
+@app.route('/friends', methods=['GET', 'POST'])
+@flask_login.login_required
+def friends():
+    form = forms.AddFriend()
+    if form.validate_on_submit():
+        friend = models.User.query.filter_by(username=form.friend_id.data).first()
+        f = models.Friends(friend_id=friend.username, anchor=flask_login.current_user)
+        db.session.add(f)
+        db.session.commit()
+    all_friends = models.Friends.query.all()
+    return flask.render_template('friends.html', friends=all_friends, title='Friends', form=form)
+
+
+
+

@@ -20,6 +20,8 @@ class User(UserMixin, db.Model):
     location = db.Column(db.String(64))
     website = db.Column(db.String(120))
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    posts = db.relationship('Posts', backref='author', lazy='dynamic')
+    friends = db.relationship('Friends', backref='anchor', lazy='dynamic')
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -45,6 +47,20 @@ class Posts(db.Model):
 
     def __repr__(self):
         return f'<Post {self.body}>'
+
+
+class Friends(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    friend_id = db.Column(db.String(64), index=True, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def avatar(self, size):
+        user = User.query.filter_by(username=self.friend_id).first()
+        digest = md5(user.email.encode('utf-8')).hexdigest()
+        return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+
+    def __repr__(self):
+        return f'<Friend {self.friend_id}>'
 
 
 @login.user_loader

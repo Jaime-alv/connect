@@ -9,8 +9,26 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
-
-<div>
+{% if user == current_user %}
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <table>
+            <tr>
+                <td>
+                    {{ form.message.label }}:
+                </td>
+                <td>
+                    {{ form.message(cols=100, rows=3) }}<br>
+                    {% for error in form.message.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </td>
+                <td>{{ form.submit() }} <input type="reset" value="Clear"></td>
+            </tr>
+        </table>
+    </form>
+{% endif %}
+<div class="justify_text">
     {% for post in posts %}
         <table>
             <tr valign="top">

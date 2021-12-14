@@ -25,6 +25,10 @@
 - (venv) $ `flask shell`
 - You can use powershell as Python Console
 
+### Debug Mode
+
+- (venv) $ `set FLASK_ENV=development`
+
 ## SQL Database
 
 ### Creating The Migration Repository

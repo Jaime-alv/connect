@@ -44,6 +44,17 @@
     {% endif %}
     </nav>
 </header>
+<div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+</div>
 <div id="main_table">
     <table border="0" width="100%">
         <tr>
@@ -70,7 +81,7 @@
     </table>
 </div>
 <footer>
-    Copyright (C) 2021 Jaime Alvarez Fernandez<br>
+    Copyright (C) 2021 Jaime Alvarez Fernandez
     <a href="https://github.com/Jaime-alv">GitHub</a>
 </footer>
 </body>
