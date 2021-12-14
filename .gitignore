@@ -9,3 +9,4 @@ __pycache__/
 
 #other files
 index_old.html
+logs/*
