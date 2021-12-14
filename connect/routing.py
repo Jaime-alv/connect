@@ -92,6 +92,7 @@ def sign_in():
         user.hash_password(form.password.data)
         db.session.add(user)
         db.session.commit()
+        app.logger.info('New user registered')
         flask.flash('Congratulations, you are now a registered user!')
         return flask.redirect(flask.url_for('index'))
     return flask.render_template('sign_in.html', form=form, title='Register')

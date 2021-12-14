@@ -27,6 +27,15 @@ You can create the server and toy with it, but it's not ready and there is no en
     - **Unix Bash**: `$ export FLASK_APP=connect.py`
 - Run flask app: (venv) $ `flask run`
 
+### Configure a real email server for error handling
+
+    set MAIL_SERVER=smtp.googlemail.com  
+    set MAIL_PORT=587  
+    set MAIL_USE_TLS=1  
+    set MAIL_USERNAME=<your-gmail-username>  
+    set MAIL_PASSWORD=<your-gmail-password>
+
+
 # What it does
 
 Chat with only those you know, either in groups or one to one. Create your own virtual and private social net.
