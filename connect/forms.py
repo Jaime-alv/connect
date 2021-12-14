@@ -95,3 +95,8 @@ class AddFriend(FlaskForm):
             raise validators.ValidationError("No user with that id.")
         if friend_id == flask_login.current_user:
             raise validators.ValidationError("Add a different user.")
+
+
+class WriteMessage(FlaskForm):
+    message = wtforms.TextAreaField('New message', validators=[validators.Length(min=1, max=140)])
+    submit = wtforms.SubmitField('Send')
