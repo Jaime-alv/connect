@@ -2,9 +2,7 @@
 tests/
 .idea/
 venv/
-
-#content in data/
-data/*
+logs/
 
 # python cache
 __pycache__/
