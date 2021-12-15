@@ -43,7 +43,7 @@ if not app.debug:
     if not pathlib.Path('logs').exists():
         pathlib.Path('logs').mkdir(parents=True, exist_ok=True)
     # create file connect.log with a maximum file size of 10kb
-    file_handler = handlers.RotatingFileHandler('logs/connect.log', maxBytes=10240, backupCount=10)
+    file_handler = handlers.RotatingFileHandler('logs/connect.log', maxBytes=10240, backupCount=5)
     # set the format for each logging message with datetime, level and in which file and line it's called
     logging_format = logging.Formatter('%(asctime)s %(levelname)s: %(message)s [file: %(module)s / line %(lineno)d]')
     file_handler.setFormatter(logging_format)

@@ -18,12 +18,16 @@
                     {{ form.message.label }}:
                 </td>
                 <td>
-                    {{ form.message(cols=100, rows=3) }}<br>
+                    {{ form.message(size=100, autocomplete=off) }}<br>
                     {% for error in form.message.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
                 </td>
-                <td>{{ form.submit() }} <input type="reset" value="Clear"></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="right">
+                    {{ form.submit() }} <input type="reset" value="Clear">
+                </td>
             </tr>
         </table>
     </form>

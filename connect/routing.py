@@ -37,12 +37,13 @@ def index():
 def user_messages(username):
     user = models.User.query.filter_by(username=username).first_or_404()
     form = forms.WriteMessage()
+    empty_form = forms.EmptyForm()
     if form.validate_on_submit():
         post = models.Posts(body=form.message.data, author=flask_login.current_user)
         db.session.add(post)
         db.session.commit()
-    posts = models.Posts.query.filter_by(user_id=user.id).all()
-    return flask.render_template('user.html', user=user, posts=posts, title=user.username, form=form)
+    posts = models.Posts.query.filter_by(user_id=user.id).order_by(models.Posts.timestamp.desc()).all()
+    return flask.render_template('user.html', user=user, posts=posts, title=user.username, form=form, e_form=empty_form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -97,6 +98,8 @@ def sign_in():
         db.session.commit()
         app.logger.info('New user registered')
         flask.flash('Congratulations, you are now a registered user!')
+        current_user = models.User.query.filter_by(username=form.username.data).first()
+        flask_login.login_user(current_user)
         return flask.redirect(flask.url_for('index'))
     return flask.render_template('sign_in.html', form=form, title='Register')
 
@@ -129,18 +132,51 @@ def change_password():
     return flask.render_template('change_password.html', title='Change password', form=formulary)
 
 
-@app.route('/friends', methods=['GET', 'POST'])
+@app.route('/following', methods=['GET', 'POST'])
 @flask_login.login_required
-def friends():
+def following():
     form = forms.AddFriend()
     if form.validate_on_submit():
-        friend = models.User.query.filter_by(username=form.friend_id.data).first()
-        f = models.Friends(friend_id=friend.username, anchor=flask_login.current_user)
-        db.session.add(f)
+        # get User object for friend_id
+        followed_id = models.User.query.filter_by(username=form.friend_id.data).first()
+        app.logger.warning(f'User: {flask_login.current_user} - follow to:{followed_id}')
+        flask_login.current_user.follow(user=followed_id)
         db.session.commit()
-    all_friends = models.Friends.query.all()
-    return flask.render_template('friends.html', friends=all_friends, title='Friends', form=form)
+        flask.flash(f"You are now following {form.friend_id.data}!")
+    all_followed = flask_login.current_user.followed_users().all()
+    return flask.render_template('following.html', friends=all_followed, title='Following', form=form)
 
 
+@app.route('/follows')
+@flask_login.login_required
+def followed():
+    posts = flask_login.current_user.followed_posts().all()
+    return flask.render_template('follows.html', title='Follows', posts=posts)
 
 
+@app.route('/follow/<username>', methods=['POST'])
+@flask_login.login_required
+def follow(username):
+    form = forms.EmptyForm()
+    if form.validate_on_submit():
+        followed_id = models.User.query.filter_by(username=username).first()
+        flask_login.current_user.follow(followed_id)
+        flask.flash(f"You are now following {username}!")
+        db.session.commit()
+        return flask.redirect(flask.url_for('user_messages', username=username))
+    else:  # in case anything fails
+        return flask.redirect(flask.url_for('index'))
+
+
+@app.route('/unfollow/<username>', methods=['POST'])
+@flask_login.login_required
+def unfollow(username):
+    form = forms.EmptyForm()
+    if form.validate_on_submit():
+        followed_id = models.User.query.filter_by(username=username).first()
+        flask_login.current_user.unfollow(followed_id)
+        flask.flash(f"You stop following {username}!")
+        db.session.commit()
+        return flask.redirect(flask.url_for('index'))
+    else:  # in case anything fails
+        return flask.redirect(flask.url_for('index'))
