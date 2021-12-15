@@ -10,6 +10,11 @@ import werkzeug.security
 from flask_login import UserMixin
 from hashlib import md5
 
+followers = db.Table('followers',
+                     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+                     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+                     )
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +27,11 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     posts = db.relationship('Posts', backref='author', lazy='dynamic')
     friends = db.relationship('Friends', backref='anchor', lazy='dynamic')
+    followed = db.relationship('User',
+                               secondary=followers,
+                               primaryjoin=(followers.c.follower_id == id),
+                               secondaryjoin=(followers.c.followed_id == id),
+                               backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         return f'<User {self.username}>'
