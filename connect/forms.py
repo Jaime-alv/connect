@@ -12,6 +12,7 @@ from connect import models
 from wtforms import validators
 
 
+# login.html
 class LoginForm(FlaskForm):
     username = wtforms.StringField('Username', validators=[validators.DataRequired()])
     password = wtforms.PasswordField('Password', validators=[validators.DataRequired()])
@@ -45,6 +46,7 @@ class RegisterForm(FlaskForm):
             raise validators.ValidationError('Please use a different email address.')
 
 
+# profile.html
 class EditProfileForm(FlaskForm):
     user_email = wtforms.StringField('Email', validators=[validators.Optional(),
                                                           validators.Regexp(r'^[a-zA-Z0-9_.]+@[a-zA-Z0-9_.]+$',
@@ -64,6 +66,7 @@ class EditProfileForm(FlaskForm):
             raise validators.ValidationError('Url needs to start with http')
 
 
+# change_password.html
 class ChangePasswordForm(FlaskForm):
     old_password = wtforms.PasswordField('Old password', validators=[validators.DataRequired()])
     new_password = wtforms.PasswordField('New password',
@@ -85,8 +88,9 @@ class ChangePasswordForm(FlaskForm):
             raise validators.ValidationError("New password can't be equal to old password")
 
 
+# following.html
 class AddFriend(FlaskForm):
-    friend_id = wtforms.StringField('Follow id', validators=[validators.DataRequired()])
+    friend_id = wtforms.StringField('Follow new user', validators=[validators.DataRequired()])
     submit = wtforms.SubmitField('Submit')
 
     def validate_friend_id(self, friend_id):
@@ -97,10 +101,12 @@ class AddFriend(FlaskForm):
             raise validators.ValidationError("Add a different user.")
 
 
+# user.html
 class WriteMessage(FlaskForm):
     message = wtforms.StringField('New message', validators=[validators.Length(min=1, max=140)])
     submit = wtforms.SubmitField('Send')
 
 
+# user.html_profile.html
 class EmptyForm(FlaskForm):
     submit = wtforms.SubmitField('Submit')
