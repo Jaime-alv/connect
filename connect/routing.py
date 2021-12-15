@@ -98,6 +98,8 @@ def sign_in():
         db.session.commit()
         app.logger.info('New user registered')
         flask.flash('Congratulations, you are now a registered user!')
+        current_user = models.User.query.filter_by(username=form.username.data).first()
+        flask_login.login_user(current_user)
         return flask.redirect(flask.url_for('index'))
     return flask.render_template('sign_in.html', form=form, title='Register')
 
