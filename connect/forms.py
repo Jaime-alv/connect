@@ -20,6 +20,7 @@ class LoginForm(FlaskForm):
     submit = wtforms.SubmitField('Log In')
 
 
+# sign_in.html
 class RegisterForm(FlaskForm):
     username = wtforms.StringField('Username', validators=[validators.DataRequired()])
     user_email = wtforms.StringField('Email', validators=[validators.DataRequired(),
