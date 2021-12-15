@@ -130,9 +130,9 @@ def change_password():
     return flask.render_template('change_password.html', title='Change password', form=formulary)
 
 
-@app.route('/friends', methods=['GET', 'POST'])
+@app.route('/following', methods=['GET', 'POST'])
 @flask_login.login_required
-def friends():
+def following():
     form = forms.AddFriend()
     if form.validate_on_submit():
         # get User object for friend_id
@@ -142,7 +142,7 @@ def friends():
         db.session.commit()
         flask.flash(f"You are now following {form.friend_id.data}!")
     all_followed = flask_login.current_user.followed_users().all()
-    return flask.render_template('friends.html', friends=all_followed, title='Friends', form=form)
+    return flask.render_template('following.html', friends=all_followed, title='Following', form=form)
 
 
 @app.route('/follows')
