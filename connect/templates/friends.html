@@ -24,7 +24,7 @@
         {% for friend in friends %}
             <tr>
                 <td><img src="{{ friend.avatar(36) }}"></td>
-                <td><a href="{{ url_for('user_messages', username=friend.friend_id) }}">{{ friend.friend_id }}</a></td>
+                <td><a href="{{ url_for('user_messages', username=friend.username) }}">{{ friend.username }}</a></td>
             </tr>
         {% endfor %}
     </table>

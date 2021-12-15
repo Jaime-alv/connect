@@ -10,6 +10,8 @@ import werkzeug.security
 from flask_login import UserMixin
 from hashlib import md5
 
+# followers association table
+# auxiliary table that has no data other than the foreign keys
 followers = db.Table('followers',
                      db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
                      db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
@@ -25,8 +27,14 @@ class User(UserMixin, db.Model):
     location = db.Column(db.String(64))
     website = db.Column(db.String(120))
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    # One-to-Many relationship
+    # link User with many items
     posts = db.relationship('Posts', backref='author', lazy='dynamic')
     friends = db.relationship('Friends', backref='anchor', lazy='dynamic')
+
+    # Many-to-Many relationship
+    # link Parent class User with another User
     followed = db.relationship('User',
                                secondary=followers,
                                primaryjoin=(followers.c.follower_id == id),
@@ -47,6 +55,34 @@ class User(UserMixin, db.Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+
+    def is_following(self, user):
+        # return True if there is a relationship between the two users. If followed_id is equal to user.id, count() will
+        # result 1, so return will be True
+        return self.followed.filter(followers.c.followed_id == user.id).count() > 0
+
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+
+    def followed_posts(self):
+        # join(create a temporary table that combines data from posts and followers tables,
+        # retrieves all posts from people that is followed)
+        # filter(Only need those posts from users User follows)
+        # union(combines posts from followed with posts from User.id)
+        # order_by()
+        posts_from_followed = Posts.query.\
+            join(followers, (followers.c.followed_id == Posts.user_id)).\
+            filter(followers.c.follower_id == self.id)
+        posts_from_me = Posts.query.filter_by(user_id=self.id)
+        return posts_from_followed.union(posts_from_me).order_by(Posts.timestamp.desc())
+
+    def followed_users(self):
+        return self.followed
 
 
 class Posts(db.Model):

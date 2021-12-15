@@ -41,7 +41,7 @@ def user_messages(username):
         post = models.Posts(body=form.message.data, author=flask_login.current_user)
         db.session.add(post)
         db.session.commit()
-    posts = models.Posts.query.filter_by(user_id=user.id).all()
+    posts = models.Posts.query.filter_by(user_id=user.id).order_by(models.Posts.timestamp.desc()).all()
     return flask.render_template('user.html', user=user, posts=posts, title=user.username, form=form)
 
 
@@ -134,13 +134,21 @@ def change_password():
 def friends():
     form = forms.AddFriend()
     if form.validate_on_submit():
-        friend = models.User.query.filter_by(username=form.friend_id.data).first()
-        f = models.Friends(friend_id=friend.username, anchor=flask_login.current_user)
-        db.session.add(f)
+        # get User object for friend_id
+        followed_id = models.User.query.filter_by(username=form.friend_id.data).first()
+        current_user = flask_login.current_user
+        app.logger.warning(f'User: {current_user} - follow to:{followed_id}')
+        current_user.follow(user=followed_id)
+        db.session.add(current_user)
         db.session.commit()
-    all_friends = models.Friends.query.all()
-    return flask.render_template('friends.html', friends=all_friends, title='Friends', form=form)
+
+    all_followed = flask_login.current_user.followed_users().all()
+    return flask.render_template('friends.html', friends=all_followed, title='Friends', form=form)
 
 
-
+@app.route('/follows')
+@flask_login.login_required
+def followed():
+    posts = flask_login.current_user.followed_posts().all()
+    return flask.render_template('follows.html', title='Follows', posts=posts)
 

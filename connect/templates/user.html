@@ -18,7 +18,7 @@
                     {{ form.message.label }}:
                 </td>
                 <td>
-                    {{ form.message(cols=100, rows=3) }}<br>
+                    {{ form.message(size=100, autocomplete=off) }}<br>
                     {% for error in form.message.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}

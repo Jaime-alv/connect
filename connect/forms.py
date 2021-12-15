@@ -98,5 +98,5 @@ class AddFriend(FlaskForm):
 
 
 class WriteMessage(FlaskForm):
-    message = wtforms.TextAreaField('New message', validators=[validators.Length(min=1, max=140)])
+    message = wtforms.StringField('New message', validators=[validators.Length(min=1, max=140)])
     submit = wtforms.SubmitField('Send')
