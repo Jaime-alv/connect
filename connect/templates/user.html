@@ -23,7 +23,11 @@
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
                 </td>
-                <td>{{ form.submit() }} <input type="reset" value="Clear"></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="right">
+                    {{ form.submit() }} <input type="reset" value="Clear">
+                </td>
             </tr>
         </table>
     </form>

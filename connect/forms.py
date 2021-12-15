@@ -86,13 +86,13 @@ class ChangePasswordForm(FlaskForm):
 
 
 class AddFriend(FlaskForm):
-    friend_id = wtforms.StringField('Add friend', validators=[validators.DataRequired()])
+    friend_id = wtforms.StringField('Follow id', validators=[validators.DataRequired()])
     submit = wtforms.SubmitField('Submit')
 
     def validate_friend_id(self, friend_id):
         friend_id = models.User.query.filter_by(username=friend_id.data).first()
         if friend_id is None:
-            raise validators.ValidationError("No user with that id.")
+            raise validators.ValidationError(f"No user with id {friend_id.data}.")
         if friend_id == flask_login.current_user:
             raise validators.ValidationError("Add a different user.")
 
@@ -100,3 +100,7 @@ class AddFriend(FlaskForm):
 class WriteMessage(FlaskForm):
     message = wtforms.StringField('New message', validators=[validators.Length(min=1, max=140)])
     submit = wtforms.SubmitField('Send')
+
+
+class EmptyForm(FlaskForm):
+    submit = wtforms.SubmitField('Submit')

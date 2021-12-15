@@ -37,12 +37,13 @@ def index():
 def user_messages(username):
     user = models.User.query.filter_by(username=username).first_or_404()
     form = forms.WriteMessage()
+    empty_form = forms.EmptyForm()
     if form.validate_on_submit():
         post = models.Posts(body=form.message.data, author=flask_login.current_user)
         db.session.add(post)
         db.session.commit()
     posts = models.Posts.query.filter_by(user_id=user.id).order_by(models.Posts.timestamp.desc()).all()
-    return flask.render_template('user.html', user=user, posts=posts, title=user.username, form=form)
+    return flask.render_template('user.html', user=user, posts=posts, title=user.username, form=form, e_form=empty_form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -136,12 +137,10 @@ def friends():
     if form.validate_on_submit():
         # get User object for friend_id
         followed_id = models.User.query.filter_by(username=form.friend_id.data).first()
-        current_user = flask_login.current_user
-        app.logger.warning(f'User: {current_user} - follow to:{followed_id}')
-        current_user.follow(user=followed_id)
-        db.session.add(current_user)
+        app.logger.warning(f'User: {flask_login.current_user} - follow to:{followed_id}')
+        flask_login.current_user.follow(user=followed_id)
         db.session.commit()
-
+        flask.flash(f"You are now following {form.friend_id.data}!")
     all_followed = flask_login.current_user.followed_users().all()
     return flask.render_template('friends.html', friends=all_followed, title='Friends', form=form)
 
@@ -152,3 +151,30 @@ def followed():
     posts = flask_login.current_user.followed_posts().all()
     return flask.render_template('follows.html', title='Follows', posts=posts)
 
+
+@app.route('/follow/<username>', methods=['POST'])
+@flask_login.login_required
+def follow(username):
+    form = forms.EmptyForm()
+    if form.validate_on_submit():
+        followed_id = models.User.query.filter_by(username=username).first()
+        flask_login.current_user.follow(followed_id)
+        flask.flash(f"You are now following {username}!")
+        db.session.commit()
+        return flask.redirect(flask.url_for('user_messages', username=username))
+    else:  # in case anything fails
+        return flask.redirect(flask.url_for('index'))
+
+
+@app.route('/unfollow/<username>', methods=['POST'])
+@flask_login.login_required
+def unfollow(username):
+    form = forms.EmptyForm()
+    if form.validate_on_submit():
+        followed_id = models.User.query.filter_by(username=username).first()
+        flask_login.current_user.unfollow(followed_id)
+        flask.flash(f"You stop following {username}!")
+        db.session.commit()
+        return flask.redirect(flask.url_for('index'))
+    else:  # in case anything fails
+        return flask.redirect(flask.url_for('index'))

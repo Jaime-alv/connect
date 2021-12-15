@@ -66,10 +66,10 @@
                 {% else %}
                 {% endif %}
             </td>
-            <td width="80%" align="center">
+            <td width="70%" align="center" valign="top">
                 {% block content %}{% endblock %}
             </td>
-            <td width="10%" valign="top">
+            <td width="13%" valign="top">
                 {% if current_user.is_authenticated %}
                 <div id="right_side">
                     {% include '_links.html' %}
