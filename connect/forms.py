@@ -96,11 +96,15 @@ class AddFriend(FlaskForm):
     submit = wtforms.SubmitField('Submit')
 
     def validate_friend_id(self, friend_id):
-        friend_id = models.User.query.filter_by(username=friend_id.data).first()
+        if friend_id.data.startswith(r"@"):
+            self.friend_id.data = friend_id.data[1:]
+        friend_id = models.User.query.filter_by(username=self.friend_id.data).first()
         if friend_id is None:
-            raise validators.ValidationError(f"No user with id {self.friend_id.data}")
+            raise validators.ValidationError(f"No user with id: {self.friend_id.data}")
         if friend_id == flask_login.current_user:
             raise validators.ValidationError("Add a different user.")
+        if flask_login.current_user.is_following(friend_id):
+            raise validators.ValidationError(f"Already following user: {self.friend_id.data}!")
 
 
 # user.html
