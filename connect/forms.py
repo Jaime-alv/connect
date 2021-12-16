@@ -53,6 +53,7 @@ class EditProfileForm(FlaskForm):
                                                           validators.Regexp(r'^[a-zA-Z0-9_.]+@[a-zA-Z0-9_.]+$',
                                                                             message='Please enter a valid email')])
     about_me = wtforms.TextAreaField('About me', validators=[validators.Length(min=0, max=140)])
+    nickname = wtforms.StringField('Nickname', validators=[validators.Length(min=0, max=25)])
     submit = wtforms.SubmitField('Save changes')
     location = wtforms.StringField('Location', validators=[validators.Optional()])
     website = wtforms.StringField('Website', validators=[validators.Optional()])
@@ -95,11 +96,15 @@ class AddFriend(FlaskForm):
     submit = wtforms.SubmitField('Submit')
 
     def validate_friend_id(self, friend_id):
-        friend_id = models.User.query.filter_by(username=friend_id.data).first()
+        if friend_id.data.startswith(r"@"):
+            self.friend_id.data = friend_id.data[1:]
+        friend_id = models.User.query.filter_by(username=self.friend_id.data).first()
         if friend_id is None:
-            raise validators.ValidationError(f"No user with id {friend_id.data}.")
+            raise validators.ValidationError(f"No user with id: {self.friend_id.data}")
         if friend_id == flask_login.current_user:
             raise validators.ValidationError("Add a different user.")
+        if flask_login.current_user.is_following(friend_id):
+            raise validators.ValidationError(f"Already following user: {self.friend_id.data}!")
 
 
 # user.html
