@@ -13,7 +13,7 @@
 
     <p>
         {% if user.nickname is not none %}
-        {{ user.nickname }}
+        {{ user.nickname }}<br>
         {% elif user.nickname == '' %}
         {% endif %}
         @{{ user.username }}
@@ -58,7 +58,7 @@
 
     <p>
         {% if current_user.nickname is not none %}
-        {{ current_user.nickname }}
+        {{ current_user.nickname }}<br>
         {% elif current_user.nickname == '' %}
         {% endif %}
         @{{ current_user.username }}
