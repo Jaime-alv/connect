@@ -19,6 +19,15 @@
                     <td>{{ user.username }}</td>
                 </tr>
                 <tr>
+                    <td>{{ form.nickname.label }}:</td>
+                    <td>
+                        {{ form.nickname(size=32, autocomplete=off) }}<br>
+                        {% for error in form.nickname.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
                     <td>Avatar:</td>
                     <td><img src="{{ user.avatar(80) }}"></td>
                 </tr>

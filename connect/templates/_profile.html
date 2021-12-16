@@ -12,23 +12,27 @@
     </p>
 
     <p>
-        {{ user.username }}
+        {% if user.nickname is not none %}
+        {{ user.nickname }}
+        {% elif user.nickname == '' %}
+        {% endif %}
+        @{{ user.username }}
     </p>
-    {% if not current_user.is_following(user) %} <!-- Not following this user-->
+
     <p>
+        {% if not current_user.is_following(user) %} <!-- Not following this user-->
         <form method="post" action="{{ url_for('follow', username=user.username) }}">
             {{ e_form.hidden_tag() }}
             {{ e_form.submit(value='Follow') }}
         </form>
-    </p>
-    {% else %}
-    <p>
+        {% else %}
         <form method="post" action="{{ url_for('unfollow', username=user.username) }}">
             {{ e_form.hidden_tag() }}
             {{ e_form.submit(value='Unfollow') }}
         </form>
+        {% endif %}
     </p>
-    {% endif %}
+
     <p class="justify_text">
         {% if user.about_me is not none %}
         {{ user.about_me }}
@@ -53,7 +57,11 @@
     </p>
 
     <p>
-        {{ current_user.username }}
+        {% if current_user.nickname is not none %}
+        {{ current_user.nickname }}
+        {% elif current_user.nickname == '' %}
+        {% endif %}
+        @{{ current_user.username }}
     </p>
 
     <p class="justify_text">
