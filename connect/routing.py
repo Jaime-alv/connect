@@ -138,6 +138,7 @@ def change_password():
 @flask_login.login_required
 def following():
     form = forms.AddFriend()
+    empty_form = forms.EmptyForm()
     if form.validate_on_submit():
         # get User object for friend_id
         followed_id = models.User.query.filter_by(username=form.friend_id.data).first()
@@ -145,15 +146,16 @@ def following():
         flask_login.current_user.follow(user=followed_id)
         db.session.commit()
         flask.flash(f"You are now following {form.friend_id.data}!")
-    all_followed = flask_login.current_user.followed_users().all()
-    return flask.render_template('following.html', friends=all_followed, title='Following', form=form)
+    all_follow = flask_login.current_user.followed_users().all()
+    return flask.render_template('following.html', friends=all_follow, title='Following', form=form, e_form=empty_form)
 
 
 @app.route('/follows')
 @flask_login.login_required
 def followed():
+    empty_form = forms.EmptyForm()
     posts = flask_login.current_user.followed_posts().all()
-    return flask.render_template('follows.html', title='Follows', posts=posts)
+    return flask.render_template('follows.html', title='Follows', posts=posts, e_form=empty_form)
 
 
 @app.route('/follow/<username>', methods=['POST'])
@@ -196,3 +198,37 @@ def delete_account():
         flask.flash(f"Profile: '{flask_login.current_user.username}' deleted!")
         return flask.redirect(flask.url_for('logout'))
     return flask.render_template('delete_account.html', title='Delete your account', form=form)
+
+
+@app.route('/star/<post>', methods=['POST'])
+@flask_login.login_required
+def star(post):
+    form = forms.EmptyForm()
+    if form.validate_on_submit():
+        post = models.Posts.query.filter_by(id=post).first()
+        flask_login.current_user.star_post(post)
+        flask.flash(f"You starred a new post from {post.author.username}!")
+        db.session.commit()
+        next_page = flask.url_for('user_messages', username=post.author.username)
+        if not next_page or urls.url_parse(next_page).netloc != '':
+            next_page = flask.url_for('index')
+        return flask.redirect(next_page)
+    else:  # in case anything fails
+        return flask.redirect(flask.url_for('index'))
+
+
+@app.route('/un_star/<post>', methods=['POST'])
+@flask_login.login_required
+def un_star(post):
+    form = forms.EmptyForm()
+    if form.validate_on_submit():
+        post = models.Posts.query.filter_by(id=post).first()
+        flask_login.current_user.un_star_post(post)
+        flask.flash(f"You un-starred a post from {post.author.username}!")
+        db.session.commit()
+        next_page = flask.url_for('user_messages', username=post.author.username)
+        if not next_page or urls.url_parse(next_page).netloc != '':
+            next_page = flask.url_for('index')
+        return flask.redirect(next_page)
+    else:  # in case anything fails
+        return flask.redirect(flask.url_for('index'))
