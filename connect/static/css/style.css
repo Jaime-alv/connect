@@ -52,6 +52,15 @@ text-align: center;
 border: 1px solid #e3a144
 }
 
+#delete_profile{
+width: 60%;
+background: #ffc2c2;
+border: 2px solid #eb4646;
+border-radius: 4px;
+color: black;
+padding: 10px;
+}
+
 #signup_css {
 text-align: left;
 line-height: 1em;

@@ -111,3 +111,9 @@ class WriteMessage(FlaskForm):
 # user.html_profile.html
 class EmptyForm(FlaskForm):
     submit = wtforms.SubmitField('Submit')
+
+
+# profile.html
+class DeleteProfile(FlaskForm):
+    delete = wtforms.SubmitField('Delete account')
+    cancel = wtforms.SubmitField('Cancel')

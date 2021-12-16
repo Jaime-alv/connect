@@ -15,7 +15,7 @@
         {{ form.hidden_tag() }}
             <table cellspacing="0" cellpadding="5" border="1">
                 <tr>
-                    <td>Nickname:</td>
+                    <td>Username:</td>
                     <td>{{ user.username }}</td>
                 </tr>
                 <tr>
@@ -72,6 +72,12 @@
                     <td>Change password:</td>
                     <td>
                          <a href="{{url_for('change_password')}}">Edit password</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Delete account:</td>
+                    <td>
+                        <a href="{{ url_for('delete_account') }}">Delete account</a>
                     </td>
                 </tr>
                 <tr>
