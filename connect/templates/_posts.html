@@ -7,10 +7,10 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<table border="0" width="100%" cellspacing="10">
+<table width="100%">
     {% for post in posts %}
-    <tr valign="top">
-        <td width="36"><img src="{{ post.author.avatar(36) }}"></td>
+    <tr>
+        <td width="50" rowspan="2" valign="top"><img src="{{ post.author.avatar(50) }}"></td>
         <td>
             <span class="bold">
             <a href="{{ url_for('user_messages', username=post.author.username) }}">{{ post.author.username }}</a>
@@ -18,5 +18,9 @@
             - {{ post.body }}
         </td>
     </tr>
+    <tr>
+        <td class="time bottom_line">{{ post.timestamp }}</td>
+    </tr>
     {% endfor %}
 </table>
+

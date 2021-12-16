@@ -81,6 +81,11 @@ header {
     margin: 10px;
 }
 
+.bottom_line{
+    border: solid;
+    border-width: 1px 0 0px 0;
+}
+
 .justify_text {
     text-align: justify;
     text-justify: inter-word;
@@ -93,6 +98,13 @@ header {
 .bold {
     font-weight: bold;
 }
+
+.time {
+    font-size:80%;
+    text-align: right;
+    opacity: 0.6;
+}
+
 /* Trick to get footer down */
 body{
   display:flex;
