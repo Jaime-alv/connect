@@ -1,0 +1,25 @@
+<!--
+  ~ connect. Build your own private social net
+  ~ Copyright (C) 2021 Jaime Alvarez Fernandez
+  ~ Contact info: jaime.af.git@gmail.com
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+{% extends "general_template.html" %}
+{% block content %}
+<div id="delete_profile">
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <h1>Caution!</h1>
+        <p class="justify_text">
+        This will delete your account. This process is irreversible and can not be undone.<br>
+        If you want to access again, you'll have to create a new account.
+        </p>
+        <p>
+            {{ form.cancel() }}  {{ form.delete() }}
+        </p>
+    </form>
+</div>
+{% endblock %}

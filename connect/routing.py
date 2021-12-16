@@ -180,3 +180,17 @@ def unfollow(username):
         return flask.redirect(flask.url_for('index'))
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
+
+
+@app.route('/delete_account', methods=['GET', 'POST'])
+@flask_login.login_required
+def delete_account():
+    form = forms.DeleteProfile()
+    if form.cancel.data:
+        return flask.redirect(flask.url_for('profile'))
+    if form.delete.data and form.validate_on_submit():
+        db.session.delete(flask_login.current_user)
+        db.session.commit()
+        flask.flash(f"Profile: '{flask_login.current_user.username}' deleted!")
+        return flask.redirect(flask.url_for('logout'))
+    return flask.render_template('delete_account.html', title='Delete your account', form=form)

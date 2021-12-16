@@ -16,6 +16,6 @@ def make_shell_context():
 
 if __name__ == "__main__":
     if sys.platform == 'darwin':  # different port if running on MacOsX
-        app.run(debug=False, port=8080)
+        app.run(debug=True, port=8080)
     else:
-        app.run(debug=False, port=80)
+        app.run(debug=True, port=80)
