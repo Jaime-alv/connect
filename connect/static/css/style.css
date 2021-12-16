@@ -1,9 +1,9 @@
 body{
-font-family: Verdana;
-background: #4b5a66;
-color: #e1e6eb;
-min-height: 100vh;
-margin: 0;
+    font-family: Verdana;
+    background: #4b5a66;
+    color: #e1e6eb;
+    min-height: 100vh;
+    margin: 0;
 }
 
 footer{
@@ -17,68 +17,81 @@ footer{
 }
 
 header {
-text-align:right;
-font-size: 120%;
-background: #86b5db;
-padding:10px;
+    font-size: 120%;
+    background: #86b5db;
+    padding:10px;
+}
+
+#flash{
+    align: left;
+    text-align: left;
+    color: black;
+    font-size: 90%;
+
+}
+#global_links{
+    text-align:right;
+    padding: 0px;
 }
 
 #main_table{
-margin: 50px 10% 0px 10%;
+    margin: 20px 10% 0px 10%;
 }
 
+
+
 #right_side{
-margin: 0px 0px 0px 0%;
-align: right;
-font-size: 100%;
-text-align: center;
-border: 2px solid #e3a144;
-border-radius: 4px;
-background: #86b5db;
-padding: 50px 0px 50px 0px;
+    margin: 0px 0px 0px 0%;
+    align: right;
+    font-size: 100%;
+    text-align: center;
+    border: 2px solid #e3a144;
+    border-radius: 4px;
+    background: #86b5db;
+    padding: 50px 0px 50px 0px;
 }
 
 #left_side{
-border: 2px solid #e3a144;
-text-align: center;
-border-radius: 4px;
-background: #86b5db;
-color: black;
-padding: 10px;
+    border: 2px solid #e3a144;
+    text-align: center;
+    border-radius: 4px;
+    background: #86b5db;
+    color: black;
+    padding: 10px;
 }
 
 #profile_table{
-text-align: center;
-border: 1px solid #e3a144
+    text-align: center;
+    border: 1px solid #e3a144
 }
 
 #delete_profile{
-width: 60%;
-background: #ffc2c2;
-border: 2px solid #eb4646;
-border-radius: 4px;
-color: black;
-padding: 10px;
+    width: 60%;
+    background: #ffc2c2;
+    border: 2px solid #eb4646;
+    border-radius: 4px;
+    color: black;
+    padding: 10px;
 }
 
 #signup_css {
-text-align: left;
-line-height: 1em;
-padding: 10px;
-margin: 10px;
+    text-align: left;
+    line-height: 1em;
+    padding: 10px;
+    margin: 10px;
 }
 
 .justify_text {
-text-align: justify;
-text-justify: inter-word;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 .underline {
-text-decoration: underline;
+    text-decoration: underline;
 }
 
 .bold {
-font-weight: bold;
+    font-weight: bold;
 }
 /* Trick to get footer down */
 body{

@@ -18,28 +18,22 @@
                     {{ form.message.label }}:
                 </td>
                 <td>
-                    {{ form.message(size=100, autocomplete=off) }}<br>
-                    {% for error in form.message.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
+                    {{ form.message(size=100, autocomplete=off) }}
                 </td>
             </tr>
             <tr>
-                <td colspan="2" align="right">
+                <td>
+
+                </td>
+                <td align="right">
+                    {% for error in form.message.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
                     {{ form.submit() }} <input type="reset" value="Clear">
                 </td>
             </tr>
         </table>
     </form>
 {% endif %}
-<div class="justify_text">
-    {% for post in posts %}
-        <table>
-            <tr valign="top">
-                <td><img src="{{ post.author.avatar(36) }}"></td>
-                <td><span class="underline bold">{{ post.author.username }} says</span>:<br>{{ post.body }}</td>
-            </tr>
-        </table>
-    {% endfor %}
-</div>
+    {% include '_posts.html' %}
 {% endblock %}
