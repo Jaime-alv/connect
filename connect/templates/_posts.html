@@ -10,7 +10,7 @@
 <table width="100%">
     {% for post in posts %}
     <tr>
-        <td width="50" rowspan="2" valign="top"><img src="{{ post.author.avatar(50) }}"></td>
+        <td width="60" rowspan="2" valign="top"><img src="{{ post.author.avatar(60) }}"></td>
         <td>
             <span class="bold">
                 {% if post.author.nickname %}{{ post.author.nickname }}{% endif %}@<a href="{{ url_for('user_messages', username=post.author.username) }}">{{ post.author.username }}</a>
@@ -19,7 +19,29 @@
         </td>
     </tr>
     <tr>
-        <td class="time bottom_line">{{ post.timestamp }}</td>
+        <td class="bottom_line">
+            <table width="100%">
+                <tr>
+                    <td width="10%">Stars: {{ post.awarded_stars.count() }}</td>
+                    <td>
+                        {% if post.author.username != current_user.username %}
+                            {% if not current_user.is_starred(post) %}
+                            <form method="post" action="{{ url_for('star', post=post.id, url=request.endpoint) }}">
+                                {{ e_form.hidden_tag() }}
+                                {{ e_form.submit(value='Star') }}
+                            </form>
+                            {% else %}
+                            <form method="post" action="{{ url_for('un_star', post=post.id, url=request.endpoint) }}">
+                                {{ e_form.hidden_tag() }}
+                                {{ e_form.submit(value='Un-star') }}
+                            </form>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="time">{{ post.timestamp }}</td>
+                </tr>
+            </table>
+        </td>
     </tr>
     {% endfor %}
 </table>

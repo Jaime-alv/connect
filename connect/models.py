@@ -14,8 +14,11 @@ from hashlib import md5
 # auxiliary table that has no data other than the foreign keys
 followers = db.Table('followers',
                      db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
-                     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
-                     )
+                     db.Column('followed_id', db.Integer, db.ForeignKey('user.id')))
+
+stars = db.Table('stars',
+                 db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+                 db.Column('post_id', db.Integer, db.ForeignKey('posts.id')))
 
 
 class User(UserMixin, db.Model):
@@ -41,6 +44,10 @@ class User(UserMixin, db.Model):
                                primaryjoin=(followers.c.follower_id == id),
                                secondaryjoin=(followers.c.followed_id == id),
                                backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
+
+    starred = db.relationship('Posts',
+                              secondary=stars,
+                              backref=db.backref('awarded_stars', lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -76,14 +83,25 @@ class User(UserMixin, db.Model):
         # filter(Only need those posts from users User follows)
         # union(combines posts from followed with posts from User.id)
         # order_by()
-        posts_from_followed = Posts.query.\
-            join(followers, (followers.c.followed_id == Posts.user_id)).\
+        posts_from_followed = Posts.query. \
+            join(followers, (followers.c.followed_id == Posts.user_id)). \
             filter(followers.c.follower_id == self.id)
         posts_from_me = Posts.query.filter_by(user_id=self.id)
         return posts_from_followed.union(posts_from_me).order_by(Posts.timestamp.desc())
 
     def followed_users(self):
         return self.followed
+
+    def is_starred(self, post):
+        return self.starred.filter(stars.c.post_id == post.id).count() > 0
+
+    def star_post(self, post):
+        if not self.is_starred(post):
+            self.starred.append(post)
+
+    def un_star_post(self, post):
+        if self.is_starred(post):
+            self.starred.remove(post)
 
 
 class Posts(db.Model):
