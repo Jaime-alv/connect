@@ -149,15 +149,15 @@ def following():
         db.session.commit()
         flask.flash(f"You are now following {form.friend_id.data}!")
     all_follow = flask_login.current_user.followed_users().all()
-    return flask.render_template('followed.html', friends=all_follow, title='Following', form=form, e_form=empty_form)
+    return flask.render_template('feed.html', friends=all_follow, title='Feed', form=form, e_form=empty_form)
 
 
-@app.route('/follows')
+@app.route('/message_board')
 @flask_login.login_required
 def followed():
     empty_form = forms.EmptyForm()
     posts = flask_login.current_user.followed_posts().all()
-    return flask.render_template('followed.html', title='Followed', posts=posts, e_form=empty_form)
+    return flask.render_template('feed.html', title='Feed', posts=posts, e_form=empty_form)
 
 
 @app.route('/follow/<username>', methods=['POST'])
