@@ -75,6 +75,7 @@ def profile():
         flask_login.current_user.location = form.location.data
         flask_login.current_user.website = form.website.data
         flask_login.current_user.nickname = form.nickname.data
+        flask_login.current_user.follower_bio = form.followers.data
         db.session.commit()
         flask.flash('Your changes have been saved.')
         return flask.redirect(flask.url_for('profile'))
@@ -84,6 +85,7 @@ def profile():
         form.about_me.data = flask_login.current_user.about_me
         form.website.data = flask_login.current_user.website
         form.location.data = flask_login.current_user.location
+        form.followers.data = flask_login.current_user.follower_bio
     return flask.render_template('profile.html', user=flask_login.current_user, form=form, title='Profile')
 
 

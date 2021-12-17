@@ -95,7 +95,9 @@
                 </tr>
                 <tr>
                     <td>Followers:</td>
-                    <td>{{ current_user.followers.count() }}</td>
+                    <td>{{ current_user.followers.count() }}<br>
+                        {{ form.followers.label }}{{ form.followers() }}
+                    </td>
                 </tr>
                 <tr>
                     <td></td>

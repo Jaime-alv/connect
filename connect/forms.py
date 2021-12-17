@@ -57,6 +57,7 @@ class EditProfileForm(FlaskForm):
     submit = wtforms.SubmitField('Save changes')
     location = wtforms.StringField('Location', validators=[validators.Optional()])
     website = wtforms.StringField('Website', validators=[validators.Optional()])
+    followers = wtforms.BooleanField('Show followers in bio')
 
     def validate_user_email(self, user_email):
         user = models.User.query.filter_by(email=user_email.data).first()
