@@ -200,35 +200,36 @@ def delete_account():
     return flask.render_template('delete_account.html', title='Delete your account', form=form)
 
 
-@app.route('/star/<post>', methods=['POST'])
+@app.route('/star/<post>/<url>', methods=['POST'])
 @flask_login.login_required
-def star(post):
+def star(post, url):
     form = forms.EmptyForm()
     if form.validate_on_submit():
         post = models.Posts.query.filter_by(id=post).first()
         flask_login.current_user.star_post(post)
         flask.flash(f"You starred a new post from {post.author.username}!")
         db.session.commit()
-        next_page = flask.url_for('user_messages', username=post.author.username)
-        if not next_page or urls.url_parse(next_page).netloc != '':
-            next_page = flask.url_for('index')
-        return flask.redirect(next_page)
+        print(url)
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=post.author.username))
+        else:
+            return flask.redirect(flask.url_for(url))
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
 
-@app.route('/un_star/<post>', methods=['POST'])
+@app.route('/un_star/<post>/<url>', methods=['POST'])
 @flask_login.login_required
-def un_star(post):
+def un_star(post, url):
     form = forms.EmptyForm()
     if form.validate_on_submit():
         post = models.Posts.query.filter_by(id=post).first()
         flask_login.current_user.un_star_post(post)
         flask.flash(f"You un-starred a post from {post.author.username}!")
         db.session.commit()
-        next_page = flask.url_for('user_messages', username=post.author.username)
-        if not next_page or urls.url_parse(next_page).netloc != '':
-            next_page = flask.url_for('index')
-        return flask.redirect(next_page)
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=post.author.username))
+        else:
+            return flask.redirect(flask.url_for(url))
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))

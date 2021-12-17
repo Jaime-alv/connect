@@ -26,12 +26,12 @@
                     <td>
                         {% if post.author.username != current_user.username %}
                             {% if not current_user.is_starred(post) %}
-                            <form method="post" action="{{ url_for('star', post=post.id) }}">
+                            <form method="post" action="{{ url_for('star', post=post.id, url=request.endpoint) }}">
                                 {{ e_form.hidden_tag() }}
                                 {{ e_form.submit(value='Star') }}
                             </form>
                             {% else %}
-                            <form method="post" action="{{ url_for('un_star', post=post.id) }}">
+                            <form method="post" action="{{ url_for('un_star', post=post.id, url=request.endpoint) }}">
                                 {{ e_form.hidden_tag() }}
                                 {{ e_form.submit(value='Un-star') }}
                             </form>
