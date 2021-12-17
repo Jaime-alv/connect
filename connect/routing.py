@@ -42,6 +42,7 @@ def user_messages(username):
         post = models.Posts(body=form.message.data, author=flask_login.current_user)
         db.session.add(post)
         db.session.commit()
+        return flask.redirect(flask.url_for('index'))
     posts = models.Posts.query.filter_by(user_id=user.id).order_by(models.Posts.timestamp.desc()).all()
     return flask.render_template('user.html', user=user, posts=posts, title=user.username, form=form, e_form=empty_form)
 
@@ -148,6 +149,7 @@ def following():
         flask_login.current_user.follow(user=followed_id)
         db.session.commit()
         flask.flash(f"You are now following {form.friend_id.data}!")
+        return flask.redirect(flask.url_for('following'))
     all_follow = flask_login.current_user.followed_users().all()
     return flask.render_template('feed.html', friends=all_follow, title='Feed', form=form, e_form=empty_form)
 
