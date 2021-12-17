@@ -94,6 +94,12 @@
                     <td>{% if user.last_seen %}{{ user.last_seen }}{% endif %}</td>
                 </tr>
                 <tr>
+                    <td>Followers:</td>
+                    <td>{{ current_user.followers.count() }}<br>
+                        {{ form.followers.label }}{{ form.followers() }}
+                    </td>
+                </tr>
+                <tr>
                     <td></td>
                     <td>{{ form.submit() }}</td>
                 </tr>

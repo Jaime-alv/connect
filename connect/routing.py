@@ -75,6 +75,7 @@ def profile():
         flask_login.current_user.location = form.location.data
         flask_login.current_user.website = form.website.data
         flask_login.current_user.nickname = form.nickname.data
+        flask_login.current_user.follower_bio = form.followers.data
         db.session.commit()
         flask.flash('Your changes have been saved.')
         return flask.redirect(flask.url_for('profile'))
@@ -84,6 +85,7 @@ def profile():
         form.about_me.data = flask_login.current_user.about_me
         form.website.data = flask_login.current_user.website
         form.location.data = flask_login.current_user.location
+        form.followers.data = flask_login.current_user.follower_bio
     return flask.render_template('profile.html', user=flask_login.current_user, form=form, title='Profile')
 
 
@@ -147,7 +149,7 @@ def following():
         db.session.commit()
         flask.flash(f"You are now following {form.friend_id.data}!")
     all_follow = flask_login.current_user.followed_users().all()
-    return flask.render_template('following.html', friends=all_follow, title='Following', form=form, e_form=empty_form)
+    return flask.render_template('followed.html', friends=all_follow, title='Following', form=form, e_form=empty_form)
 
 
 @app.route('/follows')
@@ -155,7 +157,7 @@ def following():
 def followed():
     empty_form = forms.EmptyForm()
     posts = flask_login.current_user.followed_posts().all()
-    return flask.render_template('follows.html', title='Follows', posts=posts, e_form=empty_form)
+    return flask.render_template('followed.html', title='Followed', posts=posts, e_form=empty_form)
 
 
 @app.route('/follow/<username>', methods=['POST'])

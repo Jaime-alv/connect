@@ -10,16 +10,13 @@
     <p>
         <img src="{{ user.avatar(128) }}">
     </p>
-
     <p>
         {% if user.nickname is not none %}
         {{ user.nickname }}<br>
         {% elif user.nickname == '' %}
         {% endif %}
         @{{ user.username }}
-    </p>
-
-    <p>
+        <br>
         {% if not current_user.is_following(user) %} <!-- Not following this user-->
         <form method="post" action="{{ url_for('follow', username=user.username) }}">
             {{ e_form.hidden_tag() }}
@@ -35,22 +32,22 @@
 
     <p class="justify_text">
         {% if user.about_me is not none %}
-        {{ user.about_me }}
-        {% elif user.about_me == '' %}
+            {{ user.about_me }}<br>
+            {% elif user.about_me == '' %}
         {% endif %}
-    </p>
-    <p>
         {% if user.location is not none %}
-        {{ user.location }}
-        {% elif user.location == '' %}
+            {{ user.location }}<br>
+            {% elif user.location == '' %}
         {% endif %}
-    </p>
-    <p>
         {% if user.website is not none %}
-        <a href="{{ user.website }}">{{ user.website }}</a>
-        {% elif user.website == '' %}
+            <a href="{{ user.website }}">{{ user.website }}</a><br>
+            {% elif user.website == '' %}
+        {% endif %}
+            {% if user.follower_bio %}
+            Followers: {{ user.followers.count() }}
         {% endif %}
     </p>
+
 {% else %}
     <p>
         <img src="{{ current_user.avatar(128) }}">
@@ -63,23 +60,25 @@
         {% endif %}
         @{{ current_user.username }}
     </p>
-
+<hr>
     <p class="justify_text">
         {% if current_user.about_me is not none %}
-        {{ current_user.about_me }}
-        {% elif current_user.about_me == '' %}
+            {{ current_user.about_me }}<br>
+            {% elif current_user.about_me == '' %}
         {% endif %}
-    </p>
-    <p>
         {% if current_user.location is not none %}
-        {{ current_user.location }}
-        {% elif current_user.location == '' %}
+            {{ current_user.location }}<br>
+            {% elif current_user.location == '' %}
+        {% endif %}
+        {% if current_user.website is not none %}
+            <a href="{{ current_user.website }}">{{ current_user.website }}</a><br>
+            {% elif current_user.website == '' %}
         {% endif %}
     </p>
+
     <p>
-        {% if current_user.website is not none %}
-        <a href="{{ current_user.website }}">{{ current_user.website }}</a>
-        {% elif current_user.website == '' %}
+        {% if current_user.follower_bio %}
+        Followers: {{ current_user.followers.count() }}
         {% endif %}
     </p>
 {% endif %}

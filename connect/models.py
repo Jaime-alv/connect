@@ -31,6 +31,7 @@ class User(UserMixin, db.Model):
     location = db.Column(db.String(64))
     website = db.Column(db.String(120))
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    follower_bio = db.Column(db.Boolean, default=False)
 
     # One-to-Many relationship
     # link User with many items
@@ -45,6 +46,8 @@ class User(UserMixin, db.Model):
                                secondaryjoin=(followers.c.followed_id == id),
                                backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
+    # Many-to-Many relationship
+    # link User to posts
     starred = db.relationship('Posts',
                               secondary=stars,
                               backref=db.backref('awarded_stars', lazy='dynamic'), lazy='dynamic')
