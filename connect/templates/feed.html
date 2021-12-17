@@ -21,8 +21,8 @@
 </table>
 <hr>
 {% if request.endpoint == 'followed' %}
-    {% include '_posts.html' %}
+    {% include 'sub_templates/_posts.html' %}
 {% else %}
-    {% include '_followed_users.html' %}
+    {% include 'sub_templates/_followed_users.html' %}
 {% endif %}
 {% endblock %}

@@ -67,7 +67,7 @@
             <td width="10%" valign="top">
                 {% if current_user.is_authenticated %}
                 <div id="left_side">
-                    {% include '_profile.html' %}
+                    {% include 'sub_templates/_profile.html' %}
                 </div>
                 {% else %}
                 {% endif %}
@@ -78,7 +78,7 @@
             <td width="13%" valign="top">
                 {% if current_user.is_authenticated %}
                 <div id="right_side">
-                    {% include '_links.html' %}
+                    {% include 'sub_templates/_links.html' %}
                 </div>
                 {% else %}
                 {% endif %}
