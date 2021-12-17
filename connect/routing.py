@@ -162,30 +162,36 @@ def followed():
     return flask.render_template('feed.html', title='Feed', posts=posts, e_form=empty_form)
 
 
-@app.route('/follow/<username>', methods=['POST'])
+@app.route('/follow/<username>/<url>', methods=['POST'])
 @flask_login.login_required
-def follow(username):
+def follow(username, url):
     form = forms.EmptyForm()
     if form.validate_on_submit():
         followed_id = models.User.query.filter_by(username=username).first()
         flask_login.current_user.follow(followed_id)
         flask.flash(f"You are now following {username}!")
         db.session.commit()
-        return flask.redirect(flask.url_for('user_messages', username=username))
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=followed_id.username))
+        else:
+            return flask.redirect(flask.url_for(url))
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
 
-@app.route('/unfollow/<username>', methods=['POST'])
+@app.route('/unfollow/<username>/<url>', methods=['POST'])
 @flask_login.login_required
-def unfollow(username):
+def unfollow(username, url):
     form = forms.EmptyForm()
     if form.validate_on_submit():
         followed_id = models.User.query.filter_by(username=username).first()
         flask_login.current_user.unfollow(followed_id)
         flask.flash(f"You stop following {username}!")
         db.session.commit()
-        return flask.redirect(flask.url_for('index'))
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=followed_id.username))
+        else:
+            return flask.redirect(flask.url_for(url))
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
@@ -213,7 +219,6 @@ def star(post, url):
         flask_login.current_user.star_post(post)
         flask.flash(f"You starred a new post from {post.author.username}!")
         db.session.commit()
-        print(url)
         if url == 'user_messages':
             return flask.redirect(flask.url_for('user_messages', username=post.author.username))
         else:
@@ -237,3 +242,10 @@ def un_star(post, url):
             return flask.redirect(flask.url_for(url))
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
+
+
+@app.route('/global')
+def global_messages():
+    empty_form = forms.EmptyForm()
+    posts = models.Posts.query.order_by(models.Posts.timestamp.desc()).all()
+    return flask.render_template('global.html', title="Explore global feed", posts=posts, e_form=empty_form)

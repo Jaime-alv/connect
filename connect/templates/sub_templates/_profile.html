@@ -27,12 +27,12 @@
         <tr>
             <td>
                 {% if not current_user.is_following(user) %} <!-- Not following this user-->
-                <form method="post" action="{{ url_for('follow', username=user.username) }}">
+                <form method="post" action="{{ url_for('follow', username=user.username, url=request.endpoint) }}">
                     {{ e_form.hidden_tag() }}
                     {{ e_form.submit(value='Follow') }}
                 </form>
                 {% else %}
-                <form method="post" action="{{ url_for('unfollow', username=user.username) }}">
+                <form method="post" action="{{ url_for('unfollow', username=user.username, url=request.endpoint) }}">
                     {{ e_form.hidden_tag() }}
                     {{ e_form.submit(value='Unfollow') }}
                 </form>
