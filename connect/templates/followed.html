@@ -1,0 +1,28 @@
+<!--
+  ~ connect. Build your own private social net
+  ~ Copyright (C) 2021 Jaime Alvarez Fernandez
+  ~ Contact info: jaime.af.git@gmail.com
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+{% extends "general_template.html" %}
+{% block content %}
+<table width="100%">
+    <tr>
+        <td align="center">
+            <a href="{{ url_for('followed') }}">Message board</a>
+        </td>
+        <td align="center">
+            <a href="{{ url_for('following') }}">Followed users ({{ current_user.followed.count() }})</a>
+        </td>
+    </tr>
+</table>
+<hr>
+{% if request.endpoint == 'followed' %}
+    {% include '_posts.html' %}
+{% else %}
+    {% include '_followed_users.html' %}
+{% endif %}
+{% endblock %}

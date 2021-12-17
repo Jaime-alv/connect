@@ -90,7 +90,7 @@ class ChangePasswordForm(FlaskForm):
             raise validators.ValidationError("New password can't be equal to old password")
 
 
-# following.html
+# _followed_users.html
 class AddFriend(FlaskForm):
     friend_id = wtforms.StringField('Follow new user', validators=[validators.DataRequired()])
     submit = wtforms.SubmitField('Submit')

@@ -6,6 +6,10 @@ body{
     margin: 0;
 }
 
+a {
+  color: inherit;
+}
+
 footer{
   min-height:20px;
   background:PapayaWhip;
@@ -17,7 +21,7 @@ footer{
 }
 
 header {
-    font-size: 120%;
+    font-size: 100%;
     background: #86b5db;
     padding:10px;
 }
