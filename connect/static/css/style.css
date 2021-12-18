@@ -1,5 +1,5 @@
 body{
-    font-family: Verdana;
+    font-family: Arial;
     background: #4b5a66;
     color: #e1e6eb;
     min-height: 100vh;
@@ -87,6 +87,11 @@ header {
 
 .bottom_line{
     border: solid;
+    border-width: 0px 0 1px 0;
+}
+
+.top_line{
+    border: solid;
     border-width: 1px 0 0px 0;
 }
 
@@ -103,8 +108,11 @@ header {
     font-weight: bold;
 }
 
-.time {
+.smaller_font_80 {
     font-size:80%;
+}
+
+.time {
     text-align: right;
     opacity: 0.6;
 }

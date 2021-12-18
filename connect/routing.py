@@ -28,7 +28,7 @@ from connect import models, forms
 @app.route('/index')
 def index():
     if flask_login.current_user.is_authenticated:
-        return flask.redirect(flask.url_for('user_messages', username=flask_login.current_user.username))
+        return flask.redirect(flask.url_for('feed'))
     return flask.render_template('index.html', title='Home page')
 
 
@@ -154,12 +154,18 @@ def following():
     return flask.render_template('feed.html', friends=all_follow, title='Feed', form=form, e_form=empty_form)
 
 
-@app.route('/message_board')
+@app.route('/message_board', methods=['GET', 'POST'])
 @flask_login.login_required
-def followed():
+def feed():
     empty_form = forms.EmptyForm()
+    form = forms.WriteMessage()
+    if form.validate_on_submit():
+        post = models.Posts(body=form.message.data, author=flask_login.current_user)
+        db.session.add(post)
+        db.session.commit()
+        return flask.redirect(flask.url_for('feed'))
     posts = flask_login.current_user.followed_posts().all()
-    return flask.render_template('feed.html', title='Feed', posts=posts, e_form=empty_form)
+    return flask.render_template('feed.html', title='Feed', posts=posts, e_form=empty_form, form=form)
 
 
 @app.route('/follow/<username>/<url>', methods=['POST'])

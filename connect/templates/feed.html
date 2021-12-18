@@ -12,7 +12,7 @@
 <table width="100%">
     <tr>
         <td align="center">
-            <a href="{{ url_for('followed') }}">Message board</a>
+            <a href="{{ url_for('feed') }}">Message board</a>
         </td>
         <td align="center">
             <a href="{{ url_for('following') }}">Followed users ({{ current_user.followed.count() }})</a>
@@ -20,8 +20,34 @@
     </tr>
 </table>
 <hr>
-{% if request.endpoint == 'followed' %}
+{% if request.endpoint == 'feed' %}
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <table>
+            <tr>
+                <td>
+                    {{ form.message.label }}:
+                </td>
+                <td>
+                    {{ form.message(size=100, autocomplete=off) }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+
+                </td>
+                <td align="right">
+                    {% for error in form.message.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                    {{ form.submit() }} <input type="reset" value="Clear">
+                </td>
+            </tr>
+        </table>
+    </form>
+    <p>
     {% include 'sub_templates/_posts.html' %}
+    </p>
 {% else %}
     {% include 'sub_templates/_followed_users.html' %}
 {% endif %}
