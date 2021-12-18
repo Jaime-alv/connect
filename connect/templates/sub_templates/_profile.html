@@ -20,19 +20,19 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td class="bottom_line">
                 @{{ user.username }}
             </td>
         </tr>
         <tr>
             <td>
                 {% if not current_user.is_following(user) %} <!-- Not following this user-->
-                <form method="post" action="{{ url_for('follow', username=user.username) }}">
+                <form method="post" action="{{ url_for('follow', username=user.username, url=request.endpoint) }}">
                     {{ e_form.hidden_tag() }}
                     {{ e_form.submit(value='Follow') }}
                 </form>
                 {% else %}
-                <form method="post" action="{{ url_for('unfollow', username=user.username) }}">
+                <form method="post" action="{{ url_for('unfollow', username=user.username, url=request.endpoint) }}">
                     {{ e_form.hidden_tag() }}
                     {{ e_form.submit(value='Unfollow') }}
                 </form>
@@ -40,7 +40,7 @@
             </td>
         </tr>
         <tr>
-            <td class="justify_text bottom_line">
+            <td class="justify_text">
                 {% if user.about_me is not none %}
                     {{ user.about_me }}
                 {% endif %}
@@ -82,12 +82,12 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td class="bottom_line">
                 @{{ current_user.username }}
             </td>
         </tr>
         <tr>
-            <td class="justify_text bottom_line">
+            <td class="justify_text">
                 {% if current_user.about_me is not none %}
                     {{ current_user.about_me }}
                 {% endif %}

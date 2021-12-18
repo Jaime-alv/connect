@@ -11,19 +11,20 @@
     {% for post in posts %}
     <tr>
         <td width="60" rowspan="2" valign="top"><img src="{{ post.author.avatar(60) }}"></td>
-        <td>
-            <span class="bold">
-                {% if post.author.nickname %}{{ post.author.nickname }}{% endif %}@<a href="{{ url_for('user_messages', username=post.author.username) }}">{{ post.author.username }}</a>
-            says:<br></span>
-            - {{ post.body }}
+        <td class="bottom_line">
+                <a href="{{ url_for('user_messages', username=post.author.username) }}">
+                    {% if post.author.nickname %}{{ post.author.nickname }}{% endif %}@{{ post.author.username }}
+                </a>
+                says:<br>
+             {{ post.body }}
         </td>
     </tr>
     <tr>
-        <td class="bottom_line">
+        <td>
             <table width="100%">
-                <tr>
+                <tr class="smaller_font_80">
                     <td width="10%">Stars: {{ post.awarded_stars.count() }}</td>
-                    <td>
+                    <td width="7%">
                         {% if post.author.username != current_user.username %}
                             {% if not current_user.is_starred(post) %}
                             <form method="post" action="{{ url_for('star', post=post.id, url=request.endpoint) }}">
@@ -36,6 +37,19 @@
                                 {{ e_form.submit(value='Un-star') }}
                             </form>
                             {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not current_user.is_following(post.author) and post.author != current_user %} <!-- Not following this user-->
+                        <form method="post" action="{{ url_for('follow', username=post.author.username, url=request.endpoint) }}">
+                            {{ e_form.hidden_tag() }}
+                            {{ e_form.submit(value='Follow') }}
+                        </form>
+                        {% elif current_user.is_following(post.author) and post.author != current_user  %}
+                        <form method="post" action="{{ url_for('unfollow', username=post.author.username, url=request.endpoint) }}">
+                            {{ e_form.hidden_tag() }}
+                            {{ e_form.submit(value='Unfollow') }}
+                        </form>
                         {% endif %}
                     </td>
                     <td class="time">{{ post.timestamp }}</td>
