@@ -1,0 +1,28 @@
+<!--
+  ~ connect. Build your own private social net
+  ~ Copyright (C) 2021 Jaime Alvarez Fernandez
+  ~ Contact info: jaime.af.git@gmail.com
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+{% for reply in post.replies().all() %}
+<table width="100%" border="0">
+    <tr>
+        <td>
+            from
+            <a href="{{ url_for('user_messages', username=reply.author.username) }}">
+                    {% if reply.author.nickname %}{{ reply.author.nickname }}{% endif %}@{{ reply.author.username }}
+            </a>
+            :
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {{ reply.body }}
+        </td>
+    </tr>
+</table>
+
+{% endfor %}

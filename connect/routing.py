@@ -255,3 +255,23 @@ def global_messages():
     empty_form = forms.EmptyForm()
     posts = models.Posts.query.order_by(models.Posts.timestamp.desc()).all()
     return flask.render_template('global.html', title="Explore global feed", posts=posts, e_form=empty_form)
+
+
+@app.route('/reply/<post>/<url>', methods=['POST'])
+@flask_login.login_required
+def reply(post, url):
+    empty_form = forms.EmptyForm()
+    post = models.Posts.query.filter_by(id=post).first()
+    form = forms.ReplyToMessage()
+    if form.validate_on_submit():
+        reply_to_post = models.Reply(body=form.message.data, author=flask_login.current_user, original=post)
+        db.session.add(reply_to_post)
+        db.session.commit()
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=post.author.username))
+        else:
+            return flask.redirect(flask.url_for('feed'))
+    elif form.cancel.data:
+        return flask.redirect(flask.url_for('feed'))
+    return flask.render_template('reply.html', form=form, post=post, title=f"Reply to {post.author.username}",
+                                 e_form=empty_form)
