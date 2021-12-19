@@ -40,7 +40,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        <form method="post" action="{{ url_for('reply', post=post.id, url=request.endpoint) }}">
+                        <form method="get" action="{{ url_for('reply', post=post.id, url=request.endpoint) }}">
                             {{ e_form.hidden_tag() }}
                             {{ e_form.submit(value='Reply') }}
                         </form>

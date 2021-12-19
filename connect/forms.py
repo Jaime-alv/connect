@@ -110,12 +110,12 @@ class AddFriend(FlaskForm):
 
 # user.html
 class WriteMessage(FlaskForm):
-    message = wtforms.StringField('New message', validators=[validators.Length(min=1, max=140)])
+    message = wtforms.TextAreaField('New message', validators=[validators.Length(min=1, max=140)])
     submit = wtforms.SubmitField('Send')
 
 
 class ReplyToMessage(FlaskForm):
-    message = wtforms.StringField('Reply to', validators=[validators.Length(min=1, max=140)])
+    message = wtforms.TextAreaField('Reply to', validators=[validators.Length(min=1, max=140)])
     submit = wtforms.SubmitField('Reply')
     cancel = wtforms.SubmitField('Cancel')
 

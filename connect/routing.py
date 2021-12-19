@@ -256,7 +256,6 @@ def star_reply(reply_id, url):
     form = forms.EmptyForm()
     if form.validate_on_submit():
         reply_post = models.Reply.query.filter_by(id=reply_id).first()
-        print(f'{reply_post}')
         flask_login.current_user.star_reply(reply_post)
         flask.flash(f"You starred a reply from {reply_post.author.username}!")
         db.session.commit()
@@ -292,21 +291,24 @@ def global_messages():
     return flask.render_template('global.html', title="Explore global feed", posts=posts, e_form=empty_form)
 
 
-@app.route('/reply/<post>/<url>', methods=['POST'])
+@app.route('/reply/<post>/<url>', methods=['GET', 'POST'])
 @flask_login.login_required
 def reply(post, url):
     empty_form = forms.EmptyForm()
     post = models.Posts.query.filter_by(id=post).first()
     form = forms.ReplyToMessage()
-    if form.validate_on_submit():
+    if form.cancel.data:
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=post.author.username))
+        else:
+            return flask.redirect(flask.url_for(url))
+    if form.submit.data and form.validate_on_submit():
         reply_to_post = models.Reply(body=form.message.data, author=flask_login.current_user, original=post)
         db.session.add(reply_to_post)
         db.session.commit()
         if url == 'user_messages':
             return flask.redirect(flask.url_for('user_messages', username=post.author.username))
         else:
-            return flask.redirect(flask.url_for('feed'))
-    elif form.cancel.data:
-        return flask.redirect(flask.url_for('feed'))
+            return flask.redirect(flask.url_for(url))
     return flask.render_template('reply.html', form=form, post=post, title=f"Reply to {post.author.username}",
                                  e_form=empty_form)

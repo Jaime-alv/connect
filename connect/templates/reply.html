@@ -60,11 +60,11 @@
     </tr>
     <tr>
         <td>
-            <form method="post" action="" novalidate>
+            <form method="post" action="">
                 {{ form.hidden_tag() }}
                 <table border="0">
                     <tr>
-                        <td>Your reply: {{ form.message(size=100, autocomplete=off) }}</td>
+                        <td>Your reply: {{ form.message(cols=100, rows=1, autocomplete=off) }}</td>
                     </tr>
                     <tr>
                         <td align="right">
