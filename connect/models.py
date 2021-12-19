@@ -20,6 +20,10 @@ stars = db.Table('stars',
                  db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
                  db.Column('post_id', db.Integer, db.ForeignKey('posts.id')))
 
+stars_reply = db.Table('stars_reply',
+                       db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+                       db.Column('reply_id', db.Integer, db.ForeignKey('reply.id')))
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,6 +55,10 @@ class User(UserMixin, db.Model):
     starred = db.relationship('Posts',
                               secondary=stars,
                               backref=db.backref('awarded_stars', lazy='dynamic'), lazy='dynamic')
+
+    starred_reply = db.relationship('Reply',
+                                    secondary=stars_reply,
+                                    backref=db.backref('awarded_stars_reply', lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -106,6 +114,17 @@ class User(UserMixin, db.Model):
         if self.is_starred(post):
             self.starred.remove(post)
 
+    def is_starred_reply(self, reply):
+        return self.starred_reply.filter(stars_reply.c.reply_id == reply.id).count() > 0
+
+    def star_reply(self, reply):
+        if not self.is_starred_reply(reply):
+            self.starred_reply.append(reply)
+
+    def un_star_reply(self, reply):
+        if self.is_starred_reply(reply):
+            self.starred_reply.remove(reply)
+
 
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -116,7 +135,7 @@ class Posts(db.Model):
     reply = db.relationship('Reply', backref='original', lazy='dynamic')
 
     def replies(self):
-        return Reply.query.filter_by(post_id=self.id)
+        return Reply.query.filter_by(post_id=self.id).order_by(Reply.timestamp.desc()).all()
 
     def __repr__(self):
         return f'<Post {self.body}>'

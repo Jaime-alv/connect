@@ -250,6 +250,41 @@ def un_star(post, url):
         return flask.redirect(flask.url_for('index'))
 
 
+@app.route('/star_reply/<reply_id>/<url>', methods=['POST'])
+@flask_login.login_required
+def star_reply(reply_id, url):
+    form = forms.EmptyForm()
+    if form.validate_on_submit():
+        reply_post = models.Reply.query.filter_by(id=reply_id).first()
+        print(f'{reply_post}')
+        flask_login.current_user.star_reply(reply_post)
+        flask.flash(f"You starred a reply from {reply_post.author.username}!")
+        db.session.commit()
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=reply_post.author.username))
+        else:
+            return flask.redirect(flask.url_for(url))
+    else:  # in case anything fails
+        return flask.redirect(flask.url_for('index'))
+
+
+@app.route('/un_star_reply/<reply_id>/<url>', methods=['POST'])
+@flask_login.login_required
+def un_star_reply(reply_id, url):
+    form = forms.EmptyForm()
+    if form.validate_on_submit():
+        reply_post = models.Reply.query.filter_by(id=reply_id).first()
+        flask_login.current_user.un_star_reply(reply_post)
+        flask.flash(f"You un-starred a reply from {reply_post.author.username}!")
+        db.session.commit()
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=reply_post.author.username))
+        else:
+            return flask.redirect(flask.url_for(url))
+    else:  # in case anything fails
+        return flask.redirect(flask.url_for('index'))
+
+
 @app.route('/global')
 def global_messages():
     empty_form = forms.EmptyForm()
