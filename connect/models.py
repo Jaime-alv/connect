@@ -20,6 +20,10 @@ stars = db.Table('stars',
                  db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
                  db.Column('post_id', db.Integer, db.ForeignKey('posts.id')))
 
+stars_reply = db.Table('stars_reply',
+                       db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+                       db.Column('reply_id', db.Integer, db.ForeignKey('reply.id')))
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,7 +40,7 @@ class User(UserMixin, db.Model):
     # One-to-Many relationship
     # link User with many items
     posts = db.relationship('Posts', backref='author', lazy='dynamic')
-    friends = db.relationship('Friends', backref='anchor', lazy='dynamic')
+    reply = db.relationship('Reply', backref='author', lazy='dynamic')
 
     # Many-to-Many relationship
     # link Parent class User with another User
@@ -47,10 +51,14 @@ class User(UserMixin, db.Model):
                                backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
     # Many-to-Many relationship
-    # link User to posts
+    # link User to star's post
     starred = db.relationship('Posts',
                               secondary=stars,
                               backref=db.backref('awarded_stars', lazy='dynamic'), lazy='dynamic')
+
+    starred_reply = db.relationship('Reply',
+                                    secondary=stars_reply,
+                                    backref=db.backref('awarded_stars_reply', lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -106,6 +114,17 @@ class User(UserMixin, db.Model):
         if self.is_starred(post):
             self.starred.remove(post)
 
+    def is_starred_reply(self, reply):
+        return self.starred_reply.filter(stars_reply.c.reply_id == reply.id).count() > 0
+
+    def star_reply(self, reply):
+        if not self.is_starred_reply(reply):
+            self.starred_reply.append(reply)
+
+    def un_star_reply(self, reply):
+        if self.is_starred_reply(reply):
+            self.starred_reply.remove(reply)
+
 
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -113,22 +132,26 @@ class Posts(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    reply = db.relationship('Reply', backref='original', lazy='dynamic')
+
+    def replies(self):
+        return Reply.query.filter_by(post_id=self.id).order_by(Reply.timestamp.desc()).all()
+
     def __repr__(self):
         return f'<Post {self.body}>'
 
 
-class Friends(db.Model):
+class Reply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    friend_id = db.Column(db.String(64), index=True, unique=True)
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def avatar(self, size):
-        user = User.query.filter_by(username=self.friend_id).first()
-        digest = md5(user.email.encode('utf-8')).hexdigest()
-        return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
     def __repr__(self):
-        return f'<Friend {self.friend_id}>'
+        author = User.query.filter_by(id=self.user_id).first()
+        to = Posts.query.filter_by(id=self.post_id).first().author
+        return f'<Reply:"{self.body}" from {author} to {to}>'
 
 
 @login.user_loader

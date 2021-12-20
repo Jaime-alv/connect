@@ -7,10 +7,11 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
+{% extends "general_template.html" %}
+{% block content %}
 <table width="100%">
-    {% for post in posts %}
     <tr>
-        <td width="60" rowspan="2" valign="top"><img src="{{ post.author.avatar(60) }}"></td>
+        <td width="60" rowspan="3" valign="top"><img src="{{ post.author.avatar(60) }}"></td>
         <td class="bottom_line">
                 <a href="{{ url_for('user_messages', username=post.author.username) }}">
                     {% if post.author.nickname %}{{ post.author.nickname }}{% endif %}@{{ post.author.username }}
@@ -21,7 +22,7 @@
     </tr>
     <tr>
         <td>
-            <table width="100%" border="0">
+            <table width="100%">
                 <tr class="smaller_font_80">
                     <td width="10%">Stars: {{ post.awarded_stars.count() }}</td>
                     <td width="7%">
@@ -40,12 +41,6 @@
                         {% endif %}
                     </td>
                     <td>
-                        <form method="get" action="{{ url_for('reply', post=post.id, url=request.endpoint) }}">
-                            {{ e_form.hidden_tag() }}
-                            {{ e_form.submit(value='Reply') }}
-                        </form>
-                    </td>
-                    <td>
                         {% if not current_user.is_following(post.author) and post.author != current_user %} <!-- Not following this user-->
                         <form method="post" action="{{ url_for('follow', username=post.author.username, url=request.endpoint) }}">
                             {{ e_form.hidden_tag() }}
@@ -60,23 +55,26 @@
                     </td>
                     <td class="time">{{ post.timestamp }}</td>
                 </tr>
-                <tr>
-                    <td colspan="5">
-                        {% if 0 < post.replies()|length <= 3%}
-                            {% for n in range(post.replies()|length) %}
-                                {% include "sub_templates/_replies.html" %}
-                            {% endfor %}
-                        {% elif post.replies()|length > 3 %}
-                            {% for n in range(3) %}
-                                {% include "sub_templates/_replies.html" %}
-                            {% endfor %}
-                            ▼▼<a href="{{ url_for('conversation', post=post.id)}}"> Follow this conversation ({{ post.replies()|length }})</a> ▼▼
-                        {% endif %}
-                    </td>
-                </tr>
             </table>
         </td>
     </tr>
-    {% endfor %}
 </table>
-
+<p>
+    <form method="post" action="">
+        {{ form.hidden_tag() }}
+        <table border="0">
+            <tr>
+                <td>Your reply: {{ form.message(cols=100, rows=1, autocomplete=off) }}</td>
+            </tr>
+            <tr>
+                <td align="right">
+                    {% for error in form.message.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                    {{ form.cancel() }} {{ form.submit()}} <input type="reset" value="Clear">
+                </td>
+            </tr>
+        </table>
+    </form>
+</p>
+{% endblock %}

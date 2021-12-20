@@ -94,14 +94,14 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td class="justify_text">
                 {% if current_user.location is not none %}
                     {{ current_user.location }}
                 {% endif %}
             </td>
         </tr>
         <tr>
-            <td>
+            <td class="justify_text">
                 {% if current_user.website is not none %}
                     <a href="{{ current_user.website }}">{{ current_user.website }}</a>
                 {% endif %}
