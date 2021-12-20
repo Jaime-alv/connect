@@ -62,15 +62,15 @@
                 </tr>
                 <tr>
                     <td colspan="5">
-                        {% if 0 < post.replies()|length <= 3%}
-                            {% for n in range(post.replies()|length) %}
+                        {% if 0 < post.replies().all()|length <= reply_per_post %}
+                            {% for n in range(post.replies().all()|length) %}
                                 {% include "sub_templates/_replies.html" %}
                             {% endfor %}
-                        {% elif post.replies()|length > 3 %}
+                        {% elif post.replies().all()|length > reply_per_post %}
                             {% for n in range(3) %}
                                 {% include "sub_templates/_replies.html" %}
                             {% endfor %}
-                            ▼▼<a href="{{ url_for('conversation', post=post.id)}}"> Follow this conversation ({{ post.replies()|length }})</a> ▼▼
+                            ▼▼<a href="{{ url_for('conversation', post=post.id)}}"> Follow this conversation ({{ post.replies().all()|length }})</a> ▼▼
                         {% endif %}
                     </td>
                 </tr>
