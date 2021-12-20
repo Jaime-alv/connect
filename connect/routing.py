@@ -169,16 +169,19 @@ def feed():
     return flask.render_template('feed.html', title='Feed', posts=posts, e_form=empty_form, form=form)
 
 
-@app.route('/follow/<username>/<url>', methods=['POST'])
+@app.route('/follow/<username>', methods=['POST'])
 @flask_login.login_required
-def follow(username, url):
+def follow(username):
     form = forms.EmptyForm()
     if form.validate_on_submit():
         followed_id = models.User.query.filter_by(username=username).first()
         flask_login.current_user.follow(followed_id)
         flask.flash(f"You are now following {username}!")
         db.session.commit()
-        return redirection_user(url, followed_id)
+        try:
+            return flask.redirect(flask.url_for('user_messages', username=followed_id.username))
+        except werkzeug.routing.BuildError:
+            return flask.redirect('index')
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
@@ -192,7 +195,13 @@ def unfollow(username, url):
         flask_login.current_user.unfollow(followed_id)
         flask.flash(f"You stop following {username}!")
         db.session.commit()
-        return redirection_user(url, followed_id)
+        try:
+            if url == 'user_messages':
+                return flask.redirect(flask.url_for('user_messages', username=followed_id.username))
+            else:
+                return flask.redirect(flask.url_for('feed'))
+        except werkzeug.routing.BuildError:
+            return flask.redirect('index')
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
@@ -315,6 +324,8 @@ def redirection_post(url, post):
 def redirection_user(url, user):
     try:
         if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=user.username))
+        elif url == 'conversation':
             return flask.redirect(flask.url_for('user_messages', username=user.username))
         else:
             return flask.redirect(flask.url_for(url))

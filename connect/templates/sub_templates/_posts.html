@@ -47,7 +47,7 @@
                     </td>
                     <td>
                         {% if not current_user.is_following(post.author) and post.author != current_user %} <!-- Not following this user-->
-                        <form method="post" action="{{ url_for('follow', username=post.author.username, url=request.endpoint) }}">
+                        <form method="post" action="{{ url_for('follow', username=post.author.username) }}">
                             {{ e_form.hidden_tag() }}
                             {{ e_form.submit(value='Follow') }}
                         </form>
