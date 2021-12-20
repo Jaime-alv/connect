@@ -18,6 +18,7 @@
 
 import flask
 import flask_login
+import werkzeug.routing
 from werkzeug import urls
 import datetime
 from connect import app, db
@@ -28,7 +29,7 @@ from connect import models, forms
 @app.route('/index')
 def index():
     if flask_login.current_user.is_authenticated:
-        return flask.redirect(flask.url_for('feed'))
+        return flask.redirect(flask.url_for('user_messages', username=flask_login.current_user.username))
     return flask.render_template('index.html', title='Home page')
 
 
@@ -60,7 +61,7 @@ def login():
         flask_login.login_user(user, remember=form.remember_me.data)
         next_page = flask.request.args.get('next')
         if not next_page or urls.url_parse(next_page).netloc != '':
-            next_page = flask.url_for('index')
+            next_page = flask.url_for('feed')
         return flask.redirect(next_page)
     return flask.render_template('login.html', title='Log in', form=form)
 
@@ -177,10 +178,7 @@ def follow(username, url):
         flask_login.current_user.follow(followed_id)
         flask.flash(f"You are now following {username}!")
         db.session.commit()
-        if url == 'user_messages':
-            return flask.redirect(flask.url_for('user_messages', username=followed_id.username))
-        else:
-            return flask.redirect(flask.url_for(url))
+        return redirection_user(url, followed_id)
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
@@ -194,10 +192,7 @@ def unfollow(username, url):
         flask_login.current_user.unfollow(followed_id)
         flask.flash(f"You stop following {username}!")
         db.session.commit()
-        if url == 'user_messages':
-            return flask.redirect(flask.url_for('user_messages', username=followed_id.username))
-        else:
-            return flask.redirect(flask.url_for(url))
+        return redirection_user(url, followed_id)
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
@@ -225,10 +220,7 @@ def star(post, url):
         flask_login.current_user.star_post(post)
         flask.flash(f"You starred a new post from {post.author.username}!")
         db.session.commit()
-        if url == 'user_messages':
-            return flask.redirect(flask.url_for('user_messages', username=post.author.username))
-        else:
-            return flask.redirect(flask.url_for(url))
+        return redirection_post(url, post)
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
@@ -242,10 +234,7 @@ def un_star(post, url):
         flask_login.current_user.un_star_post(post)
         flask.flash(f"You un-starred a post from {post.author.username}!")
         db.session.commit()
-        if url == 'user_messages':
-            return flask.redirect(flask.url_for('user_messages', username=post.author.username))
-        else:
-            return flask.redirect(flask.url_for(url))
+        return redirection_post(url, post)
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
@@ -259,10 +248,7 @@ def star_reply(reply_id, url):
         flask_login.current_user.star_reply(reply_post)
         flask.flash(f"You starred a reply from {reply_post.author.username}!")
         db.session.commit()
-        if url == 'user_messages':
-            return flask.redirect(flask.url_for('user_messages', username=reply_post.author.username))
-        else:
-            return flask.redirect(flask.url_for(url))
+        return redirection_post(url, reply_post)
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
@@ -276,10 +262,7 @@ def un_star_reply(reply_id, url):
         flask_login.current_user.un_star_reply(reply_post)
         flask.flash(f"You un-starred a reply from {reply_post.author.username}!")
         db.session.commit()
-        if url == 'user_messages':
-            return flask.redirect(flask.url_for('user_messages', username=reply_post.author.username))
-        else:
-            return flask.redirect(flask.url_for(url))
+        return redirection_post(url, reply_post)
     else:  # in case anything fails
         return flask.redirect(flask.url_for('index'))
 
@@ -298,17 +281,42 @@ def reply(post, url):
     post = models.Posts.query.filter_by(id=post).first()
     form = forms.ReplyToMessage()
     if form.cancel.data:
-        if url == 'user_messages':
-            return flask.redirect(flask.url_for('user_messages', username=post.author.username))
-        else:
-            return flask.redirect(flask.url_for(url))
+        return redirection_post(url, post)
     if form.submit.data and form.validate_on_submit():
         reply_to_post = models.Reply(body=form.message.data, author=flask_login.current_user, original=post)
         db.session.add(reply_to_post)
         db.session.commit()
-        if url == 'user_messages':
-            return flask.redirect(flask.url_for('user_messages', username=post.author.username))
-        else:
-            return flask.redirect(flask.url_for(url))
+        return redirection_post(url, post)
     return flask.render_template('reply.html', form=form, post=post, title=f"Reply to {post.author.username}",
                                  e_form=empty_form)
+
+
+@app.route('/conversation/<post>')
+@flask_login.login_required
+def conversation(post):
+    empty_form = forms.EmptyForm()
+    post = models.Posts.query.filter_by(id=post).first()
+    return flask.render_template('conversation.html', post=post, e_form=empty_form,
+                                 title=f"Follow conversation from {post.author.username}")
+
+
+def redirection_post(url, post):
+    try:
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=post.author.username))
+        elif url == 'conversation':
+            return flask.redirect(flask.url_for('conversation', post=post.original.id))
+        else:
+            return flask.redirect(flask.url_for(url))
+    except werkzeug.routing.BuildError:
+        return flask.redirect('index')
+
+
+def redirection_user(url, user):
+    try:
+        if url == 'user_messages':
+            return flask.redirect(flask.url_for('user_messages', username=user.username))
+        else:
+            return flask.redirect(flask.url_for(url))
+    except werkzeug.routing.BuildError:
+        return flask.redirect('index')

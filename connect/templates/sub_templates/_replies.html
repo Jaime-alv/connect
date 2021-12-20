@@ -7,14 +7,54 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-{% if post.replies()|length <= 3 and post.replies()|length > 0 %}
-    {% for n in range(post.replies()|length) %}
-        {% include "sub_templates/_reply_table.html" %}
-    {% endfor %}
-{% elif post.replies()|length > 3 %}
-    {% for n in range(3) %}
-        {% include "sub_templates/_reply_table.html" %}
-    {% endfor %}
-    Follow this conversation ({{ post.replies()|length }})
-{% endif %}
+<!-- pass a number to this sub_template with a for loop and obtain said reply number -->
+
+<table width="100%">
+    <tr>
+        <td width="30" rowspan="2" valign="top"><img src="{{ post.replies()[n].author.avatar(30) }}"></td>
+        <td class="bottom_line">
+            from
+            <a href="{{ url_for('user_messages', username=post.replies()[n].author.username) }}">{% if post.replies()[n].author.nickname %}{{ post.replies()[n].author.nickname }}{% endif %}@{{ post.replies()[n].author.username }}</a>:<br>
+            {{ post.replies()[n].body }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table width="100%" border="0">
+                <tr class="smaller_font_80">
+                    <td width="10%">Stars: {{ post.replies()[n].awarded_stars_reply.count() }}</td>
+                    <td width="7%">
+                        {% if post.replies()[n].author.username != current_user.username %}
+                            {% if not current_user.is_starred_reply(post.replies()[n]) %}
+                            <form method="post" action="{{ url_for('star_reply', reply_id=post.replies()[n].id, url=request.endpoint) }}">
+                                {{ e_form.hidden_tag() }}
+                                {{ e_form.submit(value='Star') }}
+                            </form>
+                            {% else %}
+                            <form method="post" action="{{ url_for('un_star_reply', reply_id=post.replies()[n].id, url=request.endpoint) }}">
+                                {{ e_form.hidden_tag() }}
+                                {{ e_form.submit(value='Un-star') }}
+                            </form>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not current_user.is_following(post.replies()[n].author) and post.replies()[n].author != current_user %} <!-- Not following this user-->
+                        <form method="post" action="{{ url_for('follow', username=post.replies()[n].author.username, url=request.endpoint) }}">
+                            {{ e_form.hidden_tag() }}
+                            {{ e_form.submit(value='Follow') }}
+                        </form>
+                        {% elif current_user.is_following(post.replies()[n].author) and post.replies()[n].author != current_user  %}
+                        <form method="post" action="{{ url_for('unfollow', username=post.replies()[n].author.username, url=request.endpoint) }}">
+                            {{ e_form.hidden_tag() }}
+                            {{ e_form.submit(value='Unfollow') }}
+                        </form>
+                        {% endif %}
+                    </td>
+                    <td class="time">{{ post.replies()[n].timestamp }}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 

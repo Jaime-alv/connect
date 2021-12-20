@@ -58,25 +58,23 @@
             </table>
         </td>
     </tr>
-    <tr>
-        <td>
-            <form method="post" action="">
-                {{ form.hidden_tag() }}
-                <table border="0">
-                    <tr>
-                        <td>Your reply: {{ form.message(cols=100, rows=1, autocomplete=off) }}</td>
-                    </tr>
-                    <tr>
-                        <td align="right">
-                            {% for error in form.message.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                            {% endfor %}
-                            {{ form.cancel() }} {{ form.submit()}} <input type="reset" value="Clear">
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </td>
-    </tr>
 </table>
+<p>
+    <form method="post" action="">
+        {{ form.hidden_tag() }}
+        <table border="0">
+            <tr>
+                <td>Your reply: {{ form.message(cols=100, rows=1, autocomplete=off) }}</td>
+            </tr>
+            <tr>
+                <td align="right">
+                    {% for error in form.message.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                    {{ form.cancel() }} {{ form.submit()}} <input type="reset" value="Clear">
+                </td>
+            </tr>
+        </table>
+    </form>
+</p>
 {% endblock %}
