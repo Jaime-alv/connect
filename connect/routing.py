@@ -44,8 +44,15 @@ def user_messages(username):
         db.session.add(post)
         db.session.commit()
         return flask.redirect(flask.url_for('index'))
-    posts = models.Posts.query.filter_by(user_id=user.id).order_by(models.Posts.timestamp.desc()).all()
-    return flask.render_template('user.html', user=user, posts=posts, title=user.username, form=form, e_form=empty_form)
+    page = flask.request.args.get('page', 1, type=int)
+    posts = models.Posts.query.filter_by(user_id=user.id).\
+        order_by(models.Posts.timestamp.desc()).\
+        paginate(page, app.config['POSTS_PER_PAGE'], False)
+    next_url = flask.url_for('user_messages', page=posts.next_num, username=user.username) if posts.has_next else None
+    prev_url = flask.url_for('user_messages', page=posts.prev_num, username=user.username) if posts.has_prev else None
+    return flask.render_template('user.html', user=user, posts=posts.items, title=user.username, form=form,
+                                 e_form=empty_form, reply_per_post=app.config['REPLY_PER_POST'], next_url=next_url,
+                                 prev_url=prev_url)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -165,8 +172,12 @@ def feed():
         db.session.add(post)
         db.session.commit()
         return flask.redirect(flask.url_for('feed'))
-    posts = flask_login.current_user.followed_posts().all()
-    return flask.render_template('feed.html', title='Feed', posts=posts, e_form=empty_form, form=form)
+    page = flask.request.args.get('page', 1, type=int)
+    posts = flask_login.current_user.followed_posts().paginate(page, app.config['POSTS_PER_PAGE'], False)
+    next_url = flask.url_for('feed', page=posts.next_num) if posts.has_next else None
+    prev_url = flask.url_for('feed', page=posts.prev_num) if posts.has_prev else None
+    return flask.render_template('feed.html', title='Feed', posts=posts.items, e_form=empty_form, form=form,
+                                 reply_per_post=app.config['REPLY_PER_POST'], next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/follow/<username>', methods=['POST'])
@@ -279,8 +290,14 @@ def un_star_reply(reply_id, url):
 @app.route('/global')
 def global_messages():
     empty_form = forms.EmptyForm()
-    posts = models.Posts.query.order_by(models.Posts.timestamp.desc()).all()
-    return flask.render_template('global.html', title="Explore global feed", posts=posts, e_form=empty_form)
+    page = flask.request.args.get('page', 1, type=int)
+    posts = models.Posts.query.\
+        order_by(models.Posts.timestamp.desc()).\
+        paginate(page, app.config['POSTS_PER_PAGE'], False)
+    next_url = flask.url_for('global_messages', page=posts.next_num) if posts.has_next else None
+    prev_url = flask.url_for('global_messages', page=posts.prev_num) if posts.has_prev else None
+    return flask.render_template('global.html', title="Explore global feed", posts=posts.items, e_form=empty_form,
+                                 reply_per_post=app.config['REPLY_PER_POST'], next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/reply/<post>/<url>', methods=['GET', 'POST'])

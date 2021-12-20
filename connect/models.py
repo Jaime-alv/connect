@@ -135,7 +135,7 @@ class Posts(db.Model):
     reply = db.relationship('Reply', backref='original', lazy='dynamic')
 
     def replies(self):
-        return Reply.query.filter_by(post_id=self.id).order_by(Reply.timestamp.desc()).all()
+        return Reply.query.filter_by(post_id=self.id).order_by(Reply.timestamp.desc())
 
     def __repr__(self):
         return f'<Post {self.body}>'

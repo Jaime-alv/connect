@@ -63,7 +63,7 @@
                 </tr>
                 <tr>
                     <td colspan="5">
-                        {% for n in range(post.replies()|length) %}
+                        {% for n in range(post.replies().all()|length) %}
                             {% include "sub_templates/_replies.html" %}
                         {% endfor %}
                     </td>
@@ -72,4 +72,5 @@
         </td>
     </tr>
 </table>
+    {% include "sub_templates/_pagination.html" %}
 {% endblock %}
