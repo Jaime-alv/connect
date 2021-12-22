@@ -335,7 +335,7 @@ def redirection_post(url, post):
         else:
             return flask.redirect(flask.url_for(url))
     except werkzeug.routing.BuildError:
-        return flask.redirect('index')
+        return flask.redirect(flask.url_for('index'))
 
 
 def redirection_user(url, user):
@@ -347,4 +347,4 @@ def redirection_user(url, user):
         else:
             return flask.redirect(flask.url_for(url))
     except werkzeug.routing.BuildError:
-        return flask.redirect('index')
+        return flask.redirect(flask.url_for('index'))
