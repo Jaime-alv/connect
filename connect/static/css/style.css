@@ -31,8 +31,9 @@ header {
     text-align: left;
     color: black;
     font-size: 90%;
-
+    background: #ffc2c2;
 }
+
 #global_links{
     text-align:right;
     padding: 0px;

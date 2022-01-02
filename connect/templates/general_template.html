@@ -36,15 +36,15 @@
     <table width="100%">
         <tr>
             <td>
-                <div id="flash">
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            {% for message in messages %}
-                                {{ message }}
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                </div>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div id="flash">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </td>
             <td>
                 <nav id="global_links">
